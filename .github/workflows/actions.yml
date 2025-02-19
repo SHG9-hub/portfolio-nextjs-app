@@ -21,7 +21,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: Install packages
         run: |
-          npm ci
+          yarn install
       - name: Run tests
         run: |
           yarn test

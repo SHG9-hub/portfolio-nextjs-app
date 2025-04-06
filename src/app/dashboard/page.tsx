@@ -13,7 +13,6 @@ export default function Dashboard() {
   const [user, loading, error] = useAuthState(auth);
   const router = useRouter();
 
-  // ログインしていないユーザーをホームページにリダイレクト
   React.useEffect(() => {
     if (!loading && !user) {
       router.push("/");
@@ -33,7 +32,7 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    return null; // useEffectでリダイレクトされるので、一時的に何も表示しない
+    return null;
   }
 
   return (

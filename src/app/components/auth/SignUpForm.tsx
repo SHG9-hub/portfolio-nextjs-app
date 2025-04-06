@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUpUser } from "@/app/lib/firebase/firebaseauth"; // Import signUpUser
+import { signUpUser } from "@/app/lib/firebase/firebaseauth";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -15,23 +15,26 @@ const SignUpForm = () => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+
     try {
-      const user = await signUpUser(email, password); // Call signUpUser
+      const user = await signUpUser(email, password);
+
       if (user) {
         console.log("User signed up successfully!");
-        router.push("/dashboard"); // リダイレクト先を指定
+        Promise.resolve().then(() => {
+          router.push("/dashboard");
+        });
       }
     } catch (err: any) {
-      // エラーをany型としてキャッチ（より具体的な型も可能）
       console.error("Sign up error:", err);
-      setError(err); // エラーオブジェクトをstateにセット
+      setError(err);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} data-testid="signup-form">
       <h2>Sign Up</h2>
       {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
       <div>

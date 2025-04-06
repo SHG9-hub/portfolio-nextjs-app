@@ -18,7 +18,7 @@ const signInUser = async (email: string, password: string): Promise<User | undef
         console.log("サインイン成功!:", userCredential.user);
         return userCredential.user;
     } catch (error: any) {
-        console.error("サインインエラー:", error); // エラーメッセージを修正
+        console.error("サインインエラー:", error);
     }
 }
 

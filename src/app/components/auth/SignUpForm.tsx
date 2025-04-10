@@ -4,39 +4,54 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signUpUser } from "@/app/lib/firebase/firebaseauth";
 
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export const isValidPassword = (password: string): boolean => {
+  return password.length >= 8;
+};
+
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
 
-    try {
-      const user = await signUpUser(email, password);
-
-      if (user) {
-        console.log("User signed up successfully!");
-        Promise.resolve().then(() => {
-          router.push("/dashboard");
-        });
-      }
-    } catch (err: any) {
-      console.error("Sign up error:", err);
-      setError(err);
-    } finally {
-      setIsLoading(false);
+    if (!isValidEmail(email)) {
+      setError("有効なメールアドレスを入力してください。");
+      return;
     }
+
+    if (!isValidPassword(password)) {
+      setError("パスワードは8文字以上である必要があります。");
+      return;
+    }
+
+    setIsLoading(true);
+    const user = await signUpUser(email, password);
+    setIsLoading(false);
+
+    if (!user) {
+      console.error("Sign up error: user is null or undefined");
+      setError("サインアップに失敗しました。もう一度お試しください。");
+      return;
+    }
+
+    console.log("User signed up successfully!");
+    router.push("/dashboard");
   };
 
   return (
     <form onSubmit={handleSubmit} data-testid="signup-form">
       <h2>Sign Up</h2>
-      {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <div>
         <label htmlFor="signup-email">Email:</label>
         <input
@@ -46,6 +61,7 @@ const SignUpForm = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
           disabled={isLoading}
+          aria-invalid={error?.includes("メールアドレス") ? "true" : "false"}
         />
       </div>
       <div>

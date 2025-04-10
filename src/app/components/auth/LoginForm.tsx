@@ -15,22 +15,17 @@ const LoginForm = () => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+    const user = await signInUser(email, password);
+    setIsLoading(false);
 
-    try {
-      const user = await signInUser(email, password);
-
-      if (user) {
-        console.log("User signed in successfully!");
-        Promise.resolve().then(() => {
-          router.push("/dashboard");
-        });
-      }
-    } catch (err: any) {
-      console.error("Sign in error:", err);
-      setError(err);
-    } finally {
-      setIsLoading(false);
+    if (!user) {
+      console.error("Sign in error: user is null or undefined");
+      setError(new Error("Sign in failed"));
+      return;
     }
+
+    console.log("User signed in successfully!");
+    router.push("/dashboard");
   };
 
   return (

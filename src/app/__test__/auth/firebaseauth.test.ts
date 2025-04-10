@@ -1,7 +1,6 @@
 import { signUpUser, signInUser, signOutUser } from '@/app/lib/firebase/firebaseauth';
 import { mockUserCredential } from '../mocks/firebase-mocks';
 
-// Firebase Authのモック化
 jest.mock('firebase/auth', () => ({
     createUserWithEmailAndPassword: jest.fn(() => Promise.resolve(mockUserCredential)),
     signInWithEmailAndPassword: jest.fn(() => Promise.resolve(mockUserCredential)),
@@ -26,7 +25,7 @@ describe('Firebase認証関数のテスト', () => {
     });
 
     describe('signUpUser', () => {
-        it('正常にユーザー登録ができること', async () => {
+        it('ユーザー登録の際に"signUpUser"関数が実行され引数の受け渡しも問題ないこと', async () => {
             const email = 'test@example.com';
             const password = 'password123';
 
@@ -48,7 +47,7 @@ describe('Firebase認証関数のテスト', () => {
     });
 
     describe('signInUser', () => {
-        it('正常にサインインできること', async () => {
+        it('サインインの際に"signInUser関数が実行されユーザーがサインインできること"', async () => {
             const email = 'test@example.com';
             const password = 'password123';
 
@@ -70,7 +69,7 @@ describe('Firebase認証関数のテスト', () => {
     });
 
     describe('signOutUser', () => {
-        it('正常にサインアウトできること', async () => {
+        it('"signOutUser"が実行され正常にサインアウトできること', async () => {
             const signOut = require('firebase/auth').signOut;
 
             await signOutUser();

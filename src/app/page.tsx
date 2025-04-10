@@ -1,4 +1,3 @@
-import AuthStatus from "./components/auth/AuthStatus";
 import LoginForm from "./components/auth/LoginForm";
 import SignUpForm from "./components/auth/SignUpForm";
 import { AddTaskForm } from "./components/todos/AddTaskForm";
@@ -17,7 +16,6 @@ export default function Home() {
       </div>
       <SignUpForm />
       <LoginForm />
-      <AuthStatus />
     </main>
   );
 }

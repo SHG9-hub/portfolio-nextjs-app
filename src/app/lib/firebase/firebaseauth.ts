@@ -19,6 +19,7 @@ const signInUser = async (email: string, password: string): Promise<User | undef
         return userCredential.user;
     } catch (error: any) {
         console.error("サインインエラー:", error);
+        return undefined;
     }
 }
 

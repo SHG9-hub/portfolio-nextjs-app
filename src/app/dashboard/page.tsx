@@ -16,9 +16,8 @@ export default function Dashboard() {
   const handleSignOut = async () => {
     try {
       await signOutUser();
-      console.log("User signed out successfully!");
     } catch (err) {
-      console.error("Sign out error:", err);
+      alert("サインアウト中にエラーが発生しました。");
     }
   };
 
@@ -46,9 +45,9 @@ export default function Dashboard() {
 
   return (
     <main className="mx-auto mt-10 max-w-xl space-y-10">
-      <h1 className="text-center text-4xl">マイTodo</h1>
+      <h1 className="text-center text-4xl">Next.js Todoアプリ</h1>
       <div>
-        <p>ようこそ, {user.email || "ユーザー"}!</p>
+        <p>ようこそ, {user.email}!</p>
         <button onClick={handleSignOut}>サインアウト</button>
       </div>
       <div className="space-y-5">

@@ -42,12 +42,11 @@ describe('Firebase認証関数のテスト', () => {
             const user = await signUpUser('error@example.com', 'password');
 
             expect(user).toBeUndefined();
-            expect(console.error).toHaveBeenCalled();
         });
     });
 
     describe('signInUser', () => {
-        it('サインインの際に"signInUser関数が実行されユーザーがサインインできること"', async () => {
+        it('サインインの際に"signInUser"関数が実行されユーザーがサインインできること', async () => {
             const email = 'test@example.com';
             const password = 'password123';
 
@@ -57,14 +56,13 @@ describe('Firebase認証関数のテスト', () => {
             expect(user?.email).toBe(email);
         });
 
-        it('エラー時にundefinedを返すこと', async () => {
+        it('エラー時に早期returnで処理が中断されること', async () => {
             const signInWithEmailAndPassword = require('firebase/auth').signInWithEmailAndPassword;
             signInWithEmailAndPassword.mockImplementationOnce(() => Promise.reject(new Error('サインインエラー')));
 
             const user = await signInUser('error@example.com', 'password');
 
             expect(user).toBeUndefined();
-            expect(console.error).toHaveBeenCalled();
         });
     });
 
@@ -82,7 +80,6 @@ describe('Firebase認証関数のテスト', () => {
             signOut.mockImplementationOnce(() => Promise.reject(new Error('サインアウトエラー')));
 
             await expect(signOutUser()).resolves.not.toThrow();
-            expect(console.error).toHaveBeenCalled();
         });
     });
 }); 

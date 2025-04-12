@@ -3,15 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signUpUser } from "@/app/lib/firebase/firebaseauth";
-
-export const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-export const isValidPassword = (password: string): boolean => {
-  return password.length >= 8;
-};
+import { Validator } from "@/app/lib/utility/validators";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -24,12 +16,12 @@ const SignUpForm = () => {
     e.preventDefault();
     setError(null);
 
-    if (!isValidEmail(email)) {
+    if (!Validator.isValidEmail(email)) {
       setError("有効なメールアドレスを入力してください。");
       return;
     }
 
-    if (!isValidPassword(password)) {
+    if (!Validator.isValidPassword(password)) {
       setError("パスワードは8文字以上である必要があります。");
       return;
     }
@@ -39,12 +31,10 @@ const SignUpForm = () => {
     setIsLoading(false);
 
     if (!user) {
-      console.error("Sign up error: user is null or undefined");
       setError("サインアップに失敗しました。もう一度お試しください。");
       return;
     }
 
-    console.log("User signed up successfully!");
     router.push("/dashboard");
   };
 
@@ -61,7 +51,7 @@ const SignUpForm = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
           disabled={isLoading}
-          aria-invalid={error?.includes("メールアドレス") ? "true" : "false"}
+          aria-invalid={!!error}
         />
       </div>
       <div>
@@ -73,6 +63,7 @@ const SignUpForm = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
           disabled={isLoading}
+          aria-invalid={!!error}
         />
       </div>
       <button type="submit" disabled={isLoading}>

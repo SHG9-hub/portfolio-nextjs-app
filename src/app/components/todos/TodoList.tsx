@@ -1,4 +1,4 @@
-import { Todo } from "../data/mockdata";
+import { Todo } from "@/app/data/mockdata";
 import { Task } from "./Task";
 
 type TodoListProps = {

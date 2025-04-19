@@ -3,7 +3,7 @@
 import { Delete } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 import React, { useState } from "react";
-import { Todo } from "../data/mockdata";
+import { Todo } from "@/app/data/mockdata";
 import { EditModal } from "./EditModal";
 
 type TaskProps = {

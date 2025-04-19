@@ -13,6 +13,10 @@ const config: Config = {
   moduleNameMapper: {
     '@/(.*)$': '<rootDir>/src/$1',
   },
+  // Firebaseモジュールの変換を許可（認証関連テストのみに必要）
+  transformIgnorePatterns: [
+    '/node_modules/(?!(firebase|@firebase)/)',
+  ],
 };
 
 export default createJestConfig(config);

@@ -1,5 +1,7 @@
-import { AddTaskForm } from "./components/AddTaskForm";
-import { TodoList } from "./components/TodoList";
+import LoginForm from "./components/auth/LoginForm";
+import SignUpForm from "./components/auth/SignUpForm";
+import { AddTaskForm } from "./components/todos/AddTaskForm";
+import { TodoList } from "./components/todos/TodoList";
 import { mockTodoList } from "./data/mockdata";
 
 export default function Home() {
@@ -12,6 +14,8 @@ export default function Home() {
           <TodoList todoList={mockTodoList} />
         </div>
       </div>
+      <SignUpForm />
+      <LoginForm />
     </main>
   );
 }

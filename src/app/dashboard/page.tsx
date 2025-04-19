@@ -34,7 +34,7 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="text-center mt-10">
-        エラーが発生しました: {error.message}
+        エラーが発生しました。もう一度お試しください。
       </div>
     );
   }

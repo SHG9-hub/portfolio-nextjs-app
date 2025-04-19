@@ -12,17 +12,24 @@ const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
+  const validateSignUpFormData = (): boolean => {
     if (!Validator.isValidEmail(email)) {
       setError("有効なメールアドレスを入力してください。");
-      return;
+      return false;
     }
 
     if (!Validator.isValidPassword(password)) {
       setError("パスワードは8文字以上である必要があります。");
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateSignUpFormData()) {
       return;
     }
 

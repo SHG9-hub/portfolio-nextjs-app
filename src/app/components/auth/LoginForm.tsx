@@ -12,18 +12,24 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    // Add validation checks
+  const validateLoginFormData = (): boolean => {
     if (!Validator.isValidEmail(email)) {
       setError("有効なメールアドレスを入力してください。");
-      return;
+      return false;
     }
     if (!password) {
-      // Check if password is empty
       setError("パスワードを入力してください。");
+      return false;
+    }
+
+    setError(null);
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateLoginFormData()) {
       return;
     }
 

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { TodoList } from "@/app/components/todos/TodoList";
-import { mockTodoList } from "@/app/data/mockdata";
+import { mockTodoList } from "@/app/__test__/mocks/todo-mocks";
 
 describe("TodoListコンポーネントのテスト", () => {
   it("TodoListが正しくレンダリングされること", () => {

@@ -19,11 +19,12 @@ const signInUser = async (email: string, password: string): Promise<User | undef
     }
 }
 
-const signOutUser = async (): Promise<void> => {
+const signOutUser = async (): Promise<boolean> => {
     try {
         await signOut(auth);
+        return true;
     } catch (error: any) {
-        return;
+        return false;
     }
 }
 

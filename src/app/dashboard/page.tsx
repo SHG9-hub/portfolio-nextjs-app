@@ -1,17 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { AddTaskForm } from "@/app/components/todos/AddTaskForm";
 import { TodoList } from "@/app/components/todos/TodoList";
-import { mockTodoList } from "@/app/data/mockdata";
 import { signOutUser } from "../lib/firebase/firebaseauth";
 import { auth } from "../lib/firebase/firebase";
+import useSWR from "swr";
+import { fetchUserTodo } from "../lib/firebase/firebaseservice";
 
 export default function Dashboard() {
   const [user, loading, error] = useAuthState(auth);
   const router = useRouter();
+
+  const userId = user?.uid;
+  const {
+    data: todos,
+    error: todosError,
+    isLoading,
+  } = useSWR(userId, fetchUserTodo);
+
+  // デバッグ用のログです。終わったら消します。。
+  useEffect(() => {
+    console.log("loafing", isLoading);
+    console.log("fetch", todos);
+    console.log("エラー", todosError);
+  }, [todos, isLoading]);
 
   const handleSignOut = async () => {
     try {
@@ -53,7 +68,7 @@ export default function Dashboard() {
       <div className="space-y-5">
         <AddTaskForm />
         <div className="rounded bg-slate-200 p-5">
-          <TodoList todoList={mockTodoList} />
+          {todos && <TodoList todoList={todos} />}
         </div>
       </div>
     </main>

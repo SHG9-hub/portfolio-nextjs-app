@@ -1,4 +1,4 @@
-import { Todo } from "@/app/data/mockdata";
+import { Todo } from "@/app/lib/firebase/firebaseservice";
 import { Task } from "./Task";
 
 type TodoListProps = {

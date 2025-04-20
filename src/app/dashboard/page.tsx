@@ -24,7 +24,6 @@ export default function Dashboard() {
   } = useSWR(userId, fetchUserTodo);
 
   const handleSignOut = async () => {
-    setSignOutError(null);
     setIsSigningOut(true);
 
     const isSignOutSuccessful = await signOutUser();

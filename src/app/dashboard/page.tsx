@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { AddTaskForm } from "@/app/components/todos/AddTaskForm";
@@ -11,7 +11,9 @@ import useSWR from "swr";
 import { fetchUserTodo } from "../lib/firebase/firebaseservice";
 
 export default function Dashboard() {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, authLoading, authError] = useAuthState(auth);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
   const router = useRouter();
 
   const userId = user?.uid;
@@ -21,32 +23,31 @@ export default function Dashboard() {
     isLoading,
   } = useSWR(userId, fetchUserTodo);
 
-  // デバッグ用のログです。終わったら消します。。
-  useEffect(() => {
-    console.log("loafing", isLoading);
-    console.log("fetch", todos);
-    console.log("エラー", todosError);
-  }, [todos, isLoading]);
-
   const handleSignOut = async () => {
-    try {
-      await signOutUser();
-    } catch (err) {
-      alert("サインアウト中にエラーが発生しました。");
+    setSignOutError(null);
+    setIsSigningOut(true);
+
+    const isSignOutSuccessful = await signOutUser();
+
+    setIsSigningOut(false);
+
+    if (!isSignOutSuccessful) {
+      setSignOutError("サインアウト中にエラーが発生しました。");
+      return;
     }
   };
 
   React.useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push("/");
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading) {
+  if (authLoading) {
     return <div className="text-center mt-10">ロード中...</div>;
   }
 
-  if (error) {
+  if (authError) {
     return (
       <div className="text-center mt-10">
         エラーが発生しました。もう一度お試しください。
@@ -58,19 +59,33 @@ export default function Dashboard() {
     return null;
   }
 
-  return (
-    <main className="mx-auto mt-10 max-w-xl space-y-10">
-      <h1 className="text-center text-4xl">Next.js Todoアプリ</h1>
-      <div>
-        <p>ようこそ, {user.email}!</p>
-        <button onClick={handleSignOut}>サインアウト</button>
-      </div>
-      <div className="space-y-5">
-        <AddTaskForm />
-        <div className="rounded bg-slate-200 p-5">
-          {todos && <TodoList todoList={todos} />}
+  if (isLoading) {
+    return <div className="text-center mt-10">データを読み込み中...</div>;
+  }
+
+  if (todosError) {
+    return (
+      <div className="text-center mt-10 text-red-500">{todosError.message}</div>
+    );
+  }
+
+  if (todos)
+    return (
+      <main className="mx-auto mt-10 max-w-xl space-y-10">
+        <h1 className="text-center text-4xl">Next.js Todoアプリ</h1>
+        <div>
+          <p>ようこそ, {user.email}!</p>
+          {signOutError && <p className="text-red-500">{signOutError}</p>}
+          <button onClick={handleSignOut} disabled={isSigningOut}>
+            {isSigningOut ? "処理中..." : "サインアウト"}
+          </button>
         </div>
-      </div>
-    </main>
-  );
+        <div className="space-y-5">
+          <AddTaskForm />
+          <div className="rounded bg-slate-200 p-5">
+            <TodoList todoList={todos} />
+          </div>
+        </div>
+      </main>
+    );
 }

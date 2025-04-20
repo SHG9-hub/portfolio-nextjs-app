@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { Task } from "@/app/components/todos/Task";
-import { mockTodoList } from "@/app/data/mockdata";
+import { mockTodoList } from "@/app/__test__/mocks/todo-mocks";
 
 describe("Taskコンポーネントのテスト", () => {
   const todo = mockTodoList[0];

@@ -1,0 +1,67 @@
+import { fetchUserTodo, Todo } from "@/app/lib/firebase/firebaseservice";
+import { mockTodoList } from "@/app/__test__/mocks/todo-mocks";
+
+jest.mock("firebase/firestore/lite", () => ({
+    collection: jest.fn(),
+    query: jest.fn(),
+    where: jest.fn(),
+    getDocs: jest.fn(),
+}));
+
+jest.mock("@/app/lib/firebase/firebase", () => ({
+    db: {}
+}));
+
+const collection = require("firebase/firestore/lite").collection;
+const query = require("firebase/firestore/lite").query;
+const where = require("firebase/firestore/lite").where;
+const getDocs = require("firebase/firestore/lite").getDocs;
+
+describe("firebaseservice関数のテスト", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    describe("fetchUserTodo", () => {
+        it("ユーザーIDに基づいてTodoを取得できること", async () => {
+            const mockQuerySnapshot = {
+                docs: mockTodoList.map((todo) => ({
+                    id: todo.id,
+                    data: () => ({
+                        title: todo.title,
+                        completed: todo.completed,
+                    }),
+                })),
+            };
+
+            collection.mockReturnValue("todos-collection");
+            where.mockReturnValue("userId-condition");
+            query.mockReturnValue("user-todos-query");
+            getDocs.mockResolvedValue(mockQuerySnapshot);
+
+            const userId = "test-user-id";
+            const result = await fetchUserTodo(userId);
+
+            expect(collection).toHaveBeenCalledWith(expect.anything(), "todos");
+            expect(where).toHaveBeenCalledWith("userId", "==", userId);
+            expect(query).toHaveBeenCalledWith("todos-collection", "userId-condition");
+            expect(getDocs).toHaveBeenCalledWith("user-todos-query");
+
+            expect(result).toHaveLength(mockTodoList.length);
+            result.forEach((todo, index) => {
+                expect(todo.id).toBe(mockTodoList[index].id);
+                expect(todo.title).toBe(mockTodoList[index].title);
+                expect(todo.completed).toBe(mockTodoList[index].completed);
+            });
+        });
+
+        it("エラーが発生した場合、適切なエラーをスローすること", async () => {
+            collection.mockReturnValue("todos-collection");
+            where.mockReturnValue("userId-condition");
+            query.mockReturnValue("user-todos-query");
+            getDocs.mockRejectedValue(new Error("Firestore error"));
+
+            await expect(fetchUserTodo("test-user-id")).rejects.toThrow("データの取得に失敗しました。");
+        });
+    });
+}); 

@@ -3,8 +3,8 @@
 import { Delete } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 import React, { useState } from "react";
-import { Todo } from "@/app/data/mockdata";
 import { EditModal } from "./EditModal";
+import { Todo } from "@/app/lib/firebase/firebaseservice";
 
 type TaskProps = {
   todo: Todo;

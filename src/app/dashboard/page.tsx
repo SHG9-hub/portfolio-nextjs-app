@@ -21,7 +21,6 @@ export default function Dashboard() {
     data: todos,
     error: todosError,
     isLoading,
-    mutate,
   } = useSWR(userId, fetchUserTodo);
 
   const handleSignOut = async () => {
@@ -81,7 +80,7 @@ export default function Dashboard() {
           </button>
         </div>
         <div className="space-y-5">
-          <AddTodoForm user={user} mutate={mutate} />
+          <AddTodoForm user={user} />
           <div className="rounded bg-slate-200 p-5">
             <TodoList todoList={todos} />
           </div>

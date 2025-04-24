@@ -5,20 +5,20 @@ import { Send } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import { User } from "firebase/auth";
+import { mutate } from "swr";
 
 type AddTodoFormProps = {
   user: User;
-  mutate: () => void;
 };
 
-export const AddTodoForm = ({ user, mutate }: AddTodoFormProps) => {
+export const AddTodoForm = ({ user }: AddTodoFormProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleAddTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     await addTodo({ title: inputValue, completed: false, userId: user.uid });
     setInputValue("");
-    mutate();
+    mutate(user.uid);
   };
 
   return (

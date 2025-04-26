@@ -30,7 +30,12 @@ export const AddTodoForm = ({ user }: AddTodoFormProps) => {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
       />
-      <Button type="submit" variant="contained" endIcon={<Send />}>
+      <Button
+        disabled={!inputValue.trim()}
+        type="submit"
+        variant="contained"
+        endIcon={<Send />}
+      >
         追加
       </Button>
     </form>

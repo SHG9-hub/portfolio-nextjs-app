@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { AddTaskForm } from "@/app/components/todos/AddTaskForm";
+import { AddTodoForm } from "@/app/components/todos/AddTodoForm";
 import { TodoList } from "@/app/components/todos/TodoList";
 import { signOutUser } from "../lib/firebase/firebaseauth";
 import { auth } from "../lib/firebase/firebase";
@@ -80,7 +80,7 @@ export default function Dashboard() {
           </button>
         </div>
         <div className="space-y-5">
-          <AddTaskForm />
+          <AddTodoForm user={user} />
           <div className="rounded bg-slate-200 p-5">
             <TodoList todoList={todos} />
           </div>

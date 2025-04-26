@@ -1,9 +1,22 @@
 import { render, screen } from "@testing-library/react";
 import { Task } from "@/app/components/todos/Task";
 import { mockTodoList } from "@/app/__test__/mocks/todo-mocks";
+import { mutate } from "swr";
+
+jest.mock("swr", () => ({
+  mutate: jest.fn(),
+}));
+
+jest.mock("@/app/lib/firebase/firebaseservice", () => ({
+  updataTodoState: jest.fn(),
+}));
 
 describe("Taskコンポーネントのテスト", () => {
   const todo = mockTodoList[0];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it("Todoの内容が正しく表示されること", () => {
     render(<Task todo={todo} />);

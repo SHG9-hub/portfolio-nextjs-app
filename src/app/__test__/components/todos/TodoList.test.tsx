@@ -2,7 +2,15 @@ import { render, screen } from "@testing-library/react";
 import { TodoList } from "@/app/components/todos/TodoList";
 import { mockTodoList } from "@/app/__test__/mocks/todo-mocks";
 
+jest.mock("@/app/lib/firebase/firebaseservice", () => ({
+  updataTodoState: jest.fn(),
+}));
+
 describe("TodoListコンポーネントのテスト", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("TodoListが正しくレンダリングされること", () => {
     render(<TodoList todoList={mockTodoList} />);
 

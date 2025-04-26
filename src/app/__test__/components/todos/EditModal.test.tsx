@@ -7,36 +7,42 @@ jest.mock("swr", () => ({
   mutate: jest.fn(),
 }));
 
-const mockUpdataTodoTitle = jest.fn();
+const mockUpdateTodo = jest.fn();
 
 jest.mock("@/app/lib/firebase/firebaseservice", () => ({
-  updataTodoTitle: (...args: any[]) => mockUpdataTodoTitle(...args),
+  updateTodo: (...args: any[]) => mockUpdateTodo(...args),
 }));
 
 describe("EditModalコンポーネントのテスト", () => {
-  const toggle = jest.fn();
+  const modalToggle = jest.fn();
   const mockTodo = mockTodoList[0];
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUpdataTodoTitle.mockResolvedValue(true);
+    mockUpdateTodo.mockResolvedValue(true);
   });
 
   it("モーダルが開いている時に内容が表示されること", () => {
-    render(<EditModal isOpen={true} toggle={toggle} todo={mockTodo} />);
+    render(
+      <EditModal isOpen={true} modalToggle={modalToggle} todo={mockTodo} />
+    );
 
     const editingForm = screen.getByRole("textbox");
     expect(editingForm).toBeInTheDocument();
   });
 
   it("モーダルが閉じているときはコンテンツが表示されないこと", () => {
-    render(<EditModal isOpen={false} toggle={toggle} todo={mockTodo} />);
+    render(
+      <EditModal isOpen={false} modalToggle={modalToggle} todo={mockTodo} />
+    );
 
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
-  it("モーダルのonCloseが呼ばれたときにtoggle関数が呼ばれること", () => {
-    render(<EditModal isOpen={true} toggle={toggle} todo={mockTodo} />);
+  it("モーダルのonCloseが呼ばれたときにmodalToggle関数が呼ばれること", () => {
+    render(
+      <EditModal isOpen={true} modalToggle={modalToggle} todo={mockTodo} />
+    );
 
     // モーダルのbackdropをクリックしてonCloseをトリガー
     const backdrop = screen
@@ -44,14 +50,16 @@ describe("EditModalコンポーネントのテスト", () => {
       .querySelector(".MuiBackdrop-root");
     if (backdrop) {
       fireEvent.click(backdrop);
-      expect(toggle).toHaveBeenCalledTimes(1);
+      expect(modalToggle).toHaveBeenCalledTimes(1);
     }
   });
 
-  it("更新ボタンをクリックするとupdataTodoTitle関数が呼ばれること", async () => {
-    mockUpdataTodoTitle.mockResolvedValue(true);
+  it("更新ボタンをクリックするとupdateTodo関数が呼ばれること", async () => {
+    mockUpdateTodo.mockResolvedValue(true);
 
-    render(<EditModal isOpen={true} toggle={toggle} todo={mockTodo} />);
+    render(
+      <EditModal isOpen={true} modalToggle={modalToggle} todo={mockTodo} />
+    );
 
     const editingForm = screen.getByRole("textbox");
     const updateButton = screen.getByRole("button", { name: "更新" });
@@ -60,12 +68,11 @@ describe("EditModalコンポーネントのテスト", () => {
     fireEvent.click(updateButton);
 
     await waitFor(() => {
-      expect(mockUpdataTodoTitle).toHaveBeenCalledWith(
-        mockTodo.id,
-        "更新されたタイトル"
-      );
+      expect(mockUpdateTodo).toHaveBeenCalledWith(mockTodo.id, {
+        title: "更新されたタイトル",
+      });
       expect(mutate).toHaveBeenCalledWith(mockTodo.userId);
-      expect(toggle).toHaveBeenCalled();
+      expect(modalToggle).toHaveBeenCalled();
     });
   });
 });

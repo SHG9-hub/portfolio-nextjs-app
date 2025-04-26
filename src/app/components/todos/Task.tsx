@@ -4,8 +4,7 @@ import { Delete } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 import React, { useState } from "react";
 import { EditModal } from "./EditModal";
-import { Todo, updataTodoState } from "@/app/lib/firebase/firebaseservice";
-import { mutate } from "swr";
+import { Todo, updateTodo } from "@/app/lib/firebase/firebaseservice";
 
 type TaskProps = {
   todo: Todo;
@@ -22,7 +21,7 @@ export const Task = (props: TaskProps) => {
   const handleUpdataTodoState = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    await updataTodoState(props.todo.id, e.target.checked);
+    await updateTodo(props.todo.id, { completed: e.target.checked });
     setIsCompleted(!isCompleted);
   };
 
@@ -48,7 +47,7 @@ export const Task = (props: TaskProps) => {
       <IconButton aria-label="delete" size="large" color="error">
         <Delete />
       </IconButton>
-      <EditModal todo={props.todo} isOpen={isOpen} toggle={toggle} />
+      <EditModal todo={props.todo} isOpen={isOpen} modalToggle={toggle} />
     </div>
   );
 };

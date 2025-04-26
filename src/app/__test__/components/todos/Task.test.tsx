@@ -8,7 +8,7 @@ jest.mock("swr", () => ({
 }));
 
 jest.mock("@/app/lib/firebase/firebaseservice", () => ({
-  updataTodoState: jest.fn(),
+  updateTodo: jest.fn(),
 }));
 
 describe("Taskコンポーネントのテスト", () => {

@@ -36,22 +36,15 @@ const addTodo = async (todoData: Omit<Todo, 'id'>) => {
     }
 }
 
-const updataTodoTitle = async (todoId: string, updataTitle: string) => {
+const updateTodo = async (todoId: string, updates: { title?: string; completed?: boolean }) => {
     try {
-        await updateDoc(doc(db, "todos", todoId), { title: updataTitle });
-        return true;
+        const todoRef = doc(db, "todos", todoId);
+        await updateDoc(todoRef, updates); // updates オブジェクトに含まれるフィールドを更新
+        return true; // 成功時には true を返す
     } catch (error) {
-        alert("Todoの更新中にエラーが発生しました。");
-        return false;
+        alert("Todoの更新中にエラーが発生しました。"); // エラー時にはアラート
+        return false; // 失敗時には false を返す
     }
-}
+};
 
-const updataTodoState = async (todoId: string, completed: boolean) => {
-    try {
-        await updateDoc(doc(db, "todos", todoId), { completed: completed })
-    } catch (error) {
-        alert("Todoの完了中にエラーが発生しました。");
-    }
-}
-
-export { addTodo, fetchUserTodo, updataTodoTitle, updataTodoState }
+export { addTodo, fetchUserTodo, updateTodo }

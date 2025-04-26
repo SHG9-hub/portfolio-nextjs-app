@@ -1,4 +1,4 @@
-import { Todo, updataTodoTitle } from "@/app/lib/firebase/firebaseservice";
+import { Todo, updateTodo } from "@/app/lib/firebase/firebaseservice";
 import { Send } from "@mui/icons-material";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import React, { useState } from "react";
@@ -6,7 +6,7 @@ import { mutate } from "swr";
 
 type ModalProps = {
   isOpen: boolean;
-  toggle: () => void;
+  modalToggle: () => void;
   todo: Todo;
 };
 
@@ -15,15 +15,15 @@ export const EditModal = (props: ModalProps) => {
 
   const handleUpdataTodoTitle = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updataTodoTitle(props.todo.id, updataTitle);
+    await updateTodo(props.todo.id, { title: updataTitle });
     mutate(props.todo.userId);
-    props.toggle();
+    props.modalToggle();
   };
 
   return (
     <Modal
       open={props.isOpen}
-      onClose={props.toggle}
+      onClose={props.modalToggle}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >

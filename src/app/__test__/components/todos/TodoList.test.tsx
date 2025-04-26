@@ -3,7 +3,7 @@ import { TodoList } from "@/app/components/todos/TodoList";
 import { mockTodoList } from "@/app/__test__/mocks/todo-mocks";
 
 jest.mock("@/app/lib/firebase/firebaseservice", () => ({
-  updataTodoState: jest.fn(),
+  updateTodo: jest.fn(),
 }));
 
 describe("TodoListコンポーネントのテスト", () => {

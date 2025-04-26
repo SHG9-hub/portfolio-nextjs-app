@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore/lite"
+import { addDoc, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore/lite"
 import { db } from "./firebase"
 
 export type Todo = {
@@ -36,4 +36,22 @@ const addTodo = async (todoData: Omit<Todo, 'id'>) => {
     }
 }
 
-export { addTodo, fetchUserTodo }
+const updataTodoTitle = async (todoId: string, updataTitle: string) => {
+    try {
+        await updateDoc(doc(db, "todos", todoId), { title: updataTitle });
+        return true;
+    } catch (error) {
+        alert("Todoの更新中にエラーが発生しました。");
+        return false;
+    }
+}
+
+const updataTodoState = async (todoId: string, completed: boolean) => {
+    try {
+        await updateDoc(doc(db, "todos", todoId), { completed: completed })
+    } catch (error) {
+        alert("Todoの完了中にエラーが発生しました。");
+    }
+}
+
+export { addTodo, fetchUserTodo, updataTodoTitle, updataTodoState }

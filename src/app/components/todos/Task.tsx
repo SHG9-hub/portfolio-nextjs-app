@@ -4,7 +4,8 @@ import { Delete } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 import React, { useState } from "react";
 import { EditModal } from "./EditModal";
-import { Todo } from "@/app/lib/firebase/firebaseservice";
+import { Todo, updataTodoState } from "@/app/lib/firebase/firebaseservice";
+import { mutate } from "swr";
 
 type TaskProps = {
   todo: Todo;
@@ -12,23 +13,31 @@ type TaskProps = {
 
 export const Task = (props: TaskProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(props.todo.completed);
 
   const toggle = () => {
     setIsOpen((prev) => !prev);
   };
 
+  const handleUpdataTodoState = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    await updataTodoState(props.todo.id, e.target.checked);
+    setIsCompleted(!isCompleted);
+  };
+
   return (
     <div
-      key={props.todo.title}
+      key={props.todo.id}
       className="flex items-center gap-3 rounded bg-white p-2"
     >
       <label className="flex grow items-center gap-3 hover:cursor-pointer">
         <div className="flex items-center">
           <input
-            readOnly
             type="checkbox"
             className="size-5"
-            checked={props.todo.completed}
+            checked={isCompleted}
+            onChange={handleUpdataTodoState}
           />
         </div>
         <span>{props.todo.title}</span>
@@ -39,7 +48,7 @@ export const Task = (props: TaskProps) => {
       <IconButton aria-label="delete" size="large" color="error">
         <Delete />
       </IconButton>
-      <EditModal isOpen={isOpen} toggle={toggle} />
+      <EditModal todo={props.todo} isOpen={isOpen} toggle={toggle} />
     </div>
   );
 };

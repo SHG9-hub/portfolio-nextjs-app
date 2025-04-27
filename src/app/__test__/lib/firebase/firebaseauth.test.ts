@@ -1,5 +1,5 @@
 import { signUpUser, signInUser, signOutUser } from '@/app/lib/firebase/firebaseauth';
-import { mockUserCredential } from '../mocks/firebase-mocks';
+import { mockUserCredential } from '../../mocks/firebase-mocks';
 
 jest.mock('firebase/auth', () => ({
     createUserWithEmailAndPassword: jest.fn(() => Promise.resolve(mockUserCredential)),

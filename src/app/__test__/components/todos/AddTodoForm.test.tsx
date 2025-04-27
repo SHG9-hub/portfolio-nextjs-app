@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AddTodoForm } from "@/app/components/todos/AddTodoForm";
 import { mockUser } from "@/app/__test__/mocks/firebase-mocks";
-import { addTodo } from "@/app/lib/firebase/firebaseservice";
 import { mutate } from "swr";
 
 jest.mock("swr", () => ({

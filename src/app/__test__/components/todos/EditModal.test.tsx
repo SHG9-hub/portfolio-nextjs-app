@@ -22,57 +22,59 @@ describe("EditModalコンポーネントのテスト", () => {
     mockUpdateTodo.mockResolvedValue(true);
   });
 
-  it("モーダルが開いている時に内容が表示されること", () => {
-    render(
-      <EditModal isOpen={true} modalToggle={modalToggle} todo={mockTodo} />
-    );
+  describe("モーダルが開いている時", () => {
+    beforeEach(() => {
+      render(
+        <EditModal isOpen={true} modalToggle={modalToggle} todo={mockTodo} />
+      );
+    });
 
-    const editingForm = screen.getByRole("textbox");
-    expect(editingForm).toBeInTheDocument();
-  });
+    it("モーダルの内容が表示され、編集前のタイトルが入力欄に設定されていること", () => {
+      const editingForm = screen.getByRole("textbox");
+      expect(editingForm).toBeInTheDocument();
+      expect(editingForm).toHaveValue(mockTodo.title);
+    });
 
-  it("モーダルが閉じているときはコンテンツが表示されないこと", () => {
-    render(
-      <EditModal isOpen={false} modalToggle={modalToggle} todo={mockTodo} />
-    );
+    it("モーダルのonCloseが呼ばれたときにmodalToggle関数が呼ばれること", () => {
+      const backdrop = screen
+        .getByRole("presentation")
+        .querySelector(".MuiBackdrop-root");
+      if (backdrop) {
+        fireEvent.click(backdrop);
+        expect(modalToggle).toHaveBeenCalledTimes(1);
+      }
+    });
 
-    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
-  });
+    it("更新ボタンをクリックするとupdateTodo関数が呼ばれること", async () => {
+      const editingForm = screen.getByRole("textbox");
+      const updateButton = screen.getByRole("button", { name: "更新" });
 
-  it("モーダルのonCloseが呼ばれたときにmodalToggle関数が呼ばれること", () => {
-    render(
-      <EditModal isOpen={true} modalToggle={modalToggle} todo={mockTodo} />
-    );
-
-    // モーダルのbackdropをクリックしてonCloseをトリガー
-    const backdrop = screen
-      .getByRole("presentation")
-      .querySelector(".MuiBackdrop-root");
-    if (backdrop) {
-      fireEvent.click(backdrop);
-      expect(modalToggle).toHaveBeenCalledTimes(1);
-    }
-  });
-
-  it("更新ボタンをクリックするとupdateTodo関数が呼ばれること", async () => {
-    mockUpdateTodo.mockResolvedValue(true);
-
-    render(
-      <EditModal isOpen={true} modalToggle={modalToggle} todo={mockTodo} />
-    );
-
-    const editingForm = screen.getByRole("textbox");
-    const updateButton = screen.getByRole("button", { name: "更新" });
-
-    fireEvent.change(editingForm, { target: { value: "更新されたタイトル" } });
-    fireEvent.click(updateButton);
-
-    await waitFor(() => {
-      expect(mockUpdateTodo).toHaveBeenCalledWith(mockTodo.id, {
-        title: "更新されたタイトル",
+      fireEvent.change(editingForm, {
+        target: { value: "更新されたタイトル" },
       });
-      expect(mutate).toHaveBeenCalledWith(mockTodo.userId);
-      expect(modalToggle).toHaveBeenCalled();
+      expect(editingForm).toHaveValue("更新されたタイトル");
+
+      fireEvent.click(updateButton);
+
+      await waitFor(() => {
+        expect(mockUpdateTodo).toHaveBeenCalledWith(mockTodo.id, {
+          title: "更新されたタイトル",
+        });
+        expect(mutate).toHaveBeenCalledWith(mockTodo.userId);
+        expect(modalToggle).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe("モーダルが閉じている時", () => {
+    beforeEach(() => {
+      render(
+        <EditModal isOpen={false} modalToggle={modalToggle} todo={mockTodo} />
+      );
+    });
+
+    it("モーダルの内容が表示されないこと", () => {
+      expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     });
   });
 });

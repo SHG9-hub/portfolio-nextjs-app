@@ -2,23 +2,24 @@
 
 import { useAuth } from "@/app/Hooks/useAuth";
 
-const SignUpForm = () => {
+const SignInForm = () => {
   const {
     email,
     setEmail,
     password,
     setPassword,
     isAuthLoading,
-    handleSignUp,
+    handleSignIn,
   } = useAuth();
+
   return (
-    <form onSubmit={handleSignUp} data-testid="signup-form">
-      <h2>Sign Up</h2>
+    <form onSubmit={handleSignIn} data-testid="login-form">
+      <h2>Login</h2>
       <div>
-        <label htmlFor="signup-email">Email:</label>
+        <label htmlFor="login-email">Email:</label>
         <input
           type="email"
-          id="signup-email"
+          id="login-email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -26,21 +27,22 @@ const SignUpForm = () => {
         />
       </div>
       <div>
-        <label htmlFor="signup-password">Password:</label>
+        <label htmlFor="login-password">Password:</label>
         <input
           type="password"
-          id="signup-password"
+          id="login-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           disabled={isAuthLoading}
+          autoComplete="current-password"
         />
       </div>
       <button type="submit" disabled={isAuthLoading}>
-        {isAuthLoading ? "登録中..." : "Sign Up"}
+        {isAuthLoading ? "ログイン中..." : "Login"}
       </button>
     </form>
   );
 };
 
-export default SignUpForm;
+export default SignInForm;

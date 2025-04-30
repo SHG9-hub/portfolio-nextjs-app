@@ -19,6 +19,8 @@ const signInUser = async (email: string, password: string): Promise<User | undef
     }
 }
 
+
+
 const signOutUser = async (): Promise<boolean> => {
     try {
         await signOut(auth);

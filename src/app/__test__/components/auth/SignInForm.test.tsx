@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import LoginForm from "@/app/components/auth/LoginForm";
 import { useRouter } from "next/navigation";
 import { act } from "react";
 import { signInUser } from "@/app/lib/firebase/firebaseauth";
+import SignInForm from "@/app/components/auth/SignInForm";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -27,7 +27,7 @@ describe("LoginForm コンポーネントのテスト", () => {
 
   describe("UIとフォーム動作のテスト", () => {
     it("無効なメールアドレスでエラーメッセージが表示されること", async () => {
-      render(<LoginForm />);
+      render(<SignInForm />);
 
       const emailInput = screen.getByLabelText(/Email:/i);
       const passwordInput = screen.getByLabelText(/Password:/i);
@@ -46,7 +46,7 @@ describe("LoginForm コンポーネントのテスト", () => {
     });
 
     it("パスワードが空の場合にエラーメッセージが表示されること", async () => {
-      render(<LoginForm />);
+      render(<SignInForm />);
 
       const emailInput = screen.getByLabelText(/Email:/i);
       const passwordInput = screen.getByLabelText(/Password:/i);
@@ -70,7 +70,7 @@ describe("LoginForm コンポーネントのテスト", () => {
         push: pushMock,
       });
 
-      render(<LoginForm />);
+      render(<SignInForm />);
 
       const emailInput = screen.getByLabelText(/Email:/i);
       const passwordInput = screen.getByLabelText(/Password:/i);
@@ -92,7 +92,7 @@ describe("LoginForm コンポーネントのテスト", () => {
     });
 
     it("ログインエラー時にエラーメッセージが表示されること", async () => {
-      render(<LoginForm />);
+      render(<SignInForm />);
 
       const emailInput = screen.getByLabelText(/Email:/i);
       const passwordInput = screen.getByLabelText(/Password:/i);
@@ -119,7 +119,7 @@ describe("LoginForm コンポーネントのテスト", () => {
         });
       });
 
-      render(<LoginForm />);
+      render(<SignInForm />);
 
       const emailInput = screen.getByLabelText(/Email:/i);
       const passwordInput = screen.getByLabelText(/Password:/i);

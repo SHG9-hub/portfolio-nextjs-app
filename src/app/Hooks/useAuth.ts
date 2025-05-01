@@ -1,19 +1,18 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../lib/firebase/firebase";
-import { useEffect, useState } from "react";
 import { signInUser, signOutUser, signUpUser } from "../lib/firebase/firebaseauth";
 import { useSnackbar } from "notistack"
 import { useRouter } from "next/navigation";
 import { Validator } from "../lib/utility/validators";
+import { useState } from "react";
 
 export const useAuth = () => {
-    const [user, authLoading, authError] = useAuthState(auth);
+    const [user, isAuthLoading, authError] = useAuthState(auth);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isAuthLoading, setIsAuthLoading] = useState(false);
+    const [isSubmittingLoading, setIsSubmittingLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const router = useRouter();
-
 
     const validateSignInData = (): boolean => {
         if (!Validator.isValidEmail(email)) {
@@ -34,9 +33,9 @@ export const useAuth = () => {
             return;
         }
 
-        setIsAuthLoading(true);
+        setIsSubmittingLoading(true);
         const user = await signInUser(email, password);
-        setIsAuthLoading(false);
+        setIsSubmittingLoading(false);
 
         if (!user) {
             enqueueSnackbar('サインインに失敗しました。もう一度お試しください。', { variant: 'error' });
@@ -44,8 +43,6 @@ export const useAuth = () => {
         }
         router.push("/dashboard");
     };
-
-
 
     const validateSignUpFormData = (): boolean => {
         if (!Validator.isValidEmail(email)) {
@@ -67,9 +64,9 @@ export const useAuth = () => {
             return;
         }
 
-        setIsAuthLoading(true);
+        setIsSubmittingLoading(true);
         const user = await signUpUser(email, password);
-        setIsAuthLoading(false);
+        setIsSubmittingLoading(false);
 
         if (!user) {
             enqueueSnackbar('サインアップに失敗しました。もう一度お試しください。', { variant: 'error' });
@@ -80,9 +77,9 @@ export const useAuth = () => {
     };
 
     const handleSignOut = async () => {
-        setIsAuthLoading(true);
+        setIsSubmittingLoading(true);
         const isSignOutSuccessful = await signOutUser();
-        setIsAuthLoading(false);
+        setIsSubmittingLoading(false);
         if (!isSignOutSuccessful) {
             enqueueSnackbar('サインアウト中にエラーが発生しました。', { variant: 'error' });
             return;
@@ -91,17 +88,22 @@ export const useAuth = () => {
     };
 
     return {
-        user,
-        authLoading,
-        handleSignOut,
-        isAuthLoading,
-
-        email,
-        setEmail,
-        password,
-        setPassword,
-        handleSignIn,
-
-        handleSignUp,
+        authForm: {
+            email,
+            setEmail,
+            password,
+            setPassword,
+        },
+        authAction: {
+            handleSignUp,
+            handleSignIn,
+            handleSignOut,
+            isSubmittingLoading,
+        },
+        authUserState: {
+            user,
+            isAuthLoading,
+            authError
+        }
     };
 }

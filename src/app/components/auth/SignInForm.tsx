@@ -3,27 +3,20 @@
 import { useAuth } from "@/app/Hooks/useAuth";
 
 const SignInForm = () => {
-  const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    isAuthLoading,
-    handleSignIn,
-  } = useAuth();
+  const { authAction, authForm } = useAuth();
 
   return (
-    <form onSubmit={handleSignIn} data-testid="login-form">
+    <form onSubmit={authAction.handleSignIn} data-testid="login-form">
       <h2>Login</h2>
       <div>
         <label htmlFor="login-email">Email:</label>
         <input
           type="email"
           id="login-email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={authForm.email}
+          onChange={(e) => authForm.setEmail(e.target.value)}
           required
-          disabled={isAuthLoading}
+          disabled={authAction.isSubmittingLoading}
         />
       </div>
       <div>
@@ -31,15 +24,15 @@ const SignInForm = () => {
         <input
           type="password"
           id="login-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={authForm.password}
+          onChange={(e) => authForm.setPassword(e.target.value)}
           required
-          disabled={isAuthLoading}
+          disabled={authAction.isSubmittingLoading}
           autoComplete="current-password"
         />
       </div>
-      <button type="submit" disabled={isAuthLoading}>
-        {isAuthLoading ? "ログイン中..." : "Login"}
+      <button type="submit" disabled={authAction.isSubmittingLoading}>
+        {authAction.isSubmittingLoading ? "ログイン中..." : "Login"}
       </button>
     </form>
   );

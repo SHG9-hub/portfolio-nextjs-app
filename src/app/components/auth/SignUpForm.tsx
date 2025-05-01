@@ -24,7 +24,7 @@ const SignUpForm = () => {
           type="password"
           id="signup-password"
           value={authForm.password}
-          onChange={(e) => authForm.setEmail(e.target.value)}
+          onChange={(e) => authForm.setPassword(e.target.value)}
           required
           disabled={authAction.isSubmittingLoading}
         />

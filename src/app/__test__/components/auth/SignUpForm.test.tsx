@@ -1,143 +1,174 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import SignUpForm from "@/app/components/auth/SignUpForm";
 import { useRouter } from "next/navigation";
 import { act } from "react";
-import { signUpUser } from "@/app/lib/firebase/firebaseauth";
+import SignUpForm from "@/app/components/auth/SignUpForm";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock("@/app/lib/firebase/firebaseauth", () => ({
-  signUpUser: jest.fn().mockImplementation((email) => {
-    if (email === "error@example.com") {
-      return Promise.resolve(null);
-    }
-    return Promise.resolve({ email });
-  }),
+const mockAuthForm = {
+  email: "",
+  password: "",
+};
+
+const mockRouter = {
+  push: jest.fn(),
+};
+
+const mockHandleSignUp = jest.fn((e) => {
+  e.preventDefault();
+  if (!mockAuthForm.email.includes("@")) {
+    mockEnqueueSnackbar("有効なメールアドレスを入力してください。", {
+      variant: "warning",
+    });
+    return;
+  }
+  if (mockAuthForm.password.length < 8) {
+    mockEnqueueSnackbar("パスワードは8文字以上である必要があります。", {
+      variant: "warning",
+    });
+    return;
+  }
+  if (mockAuthForm.email === "error@example.com") {
+    mockEnqueueSnackbar(
+      "サインアップに失敗しました。もう一度お試しください。",
+      { variant: "error" }
+    );
+    return;
+  }
+  mockRouter.push("/dashboard");
+});
+
+jest.mock("@/app/Hooks/useAuth", () => ({
+  useAuth: jest.fn(() => ({
+    authForm: {
+      email: mockAuthForm.email,
+      setEmail: jest.fn((value) => {
+        mockAuthForm.email = value;
+      }),
+      password: mockAuthForm.password,
+      setPassword: jest.fn((value) => {
+        mockAuthForm.password = value;
+      }),
+    },
+    authAction: {
+      handleSignUp: mockHandleSignUp,
+      isSubmittingLoading: false,
+    },
+    authUserState: {
+      user: null,
+      isAuthLoading: false,
+      authError: null,
+    },
+  })),
+}));
+
+const mockEnqueueSnackbar = jest.fn();
+jest.mock("notistack", () => ({
+  useSnackbar: jest.fn(() => ({
+    enqueueSnackbar: mockEnqueueSnackbar,
+  })),
 }));
 
 describe("SignUpForm コンポーネントのテスト", () => {
+  let emailInput: HTMLElement;
+  let passwordInput: HTMLElement;
+  let form: HTMLElement;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    (useRouter as jest.Mock).mockReturnValue({
-      push: jest.fn(),
-    });
+    (useRouter as jest.Mock).mockReturnValue(mockRouter);
+    mockAuthForm.email = "";
+    mockAuthForm.password = "";
+
+    render(<SignUpForm />);
+    emailInput = screen.getByLabelText(/Email:/i);
+    passwordInput = screen.getByLabelText(/Password:/i);
+    form = screen.getByTestId("signup-form");
   });
 
   describe("UIとフォーム動作のテスト", () => {
     it("無効なメールアドレスでエラーメッセージが表示されること", async () => {
-      render(<SignUpForm />);
-
-      const emailInput = screen.getByLabelText(/Email:/i);
-      const passwordInput = screen.getByLabelText(/Password:/i);
-      const form = screen.getByTestId("signup-form");
-
       await act(async () => {
         fireEvent.change(emailInput, { target: { value: "invalid-email" } });
         fireEvent.change(passwordInput, { target: { value: "password123" } });
         fireEvent.submit(form);
       });
 
-      expect(
-        screen.getByText("有効なメールアドレスを入力してください。")
-      ).toBeInTheDocument();
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        "有効なメールアドレスを入力してください。",
+        { variant: "warning" }
+      );
     });
 
     it("短すぎるパスワードでエラーメッセージが表示されること", async () => {
-      render(<SignUpForm />);
-
-      const emailInput = screen.getByLabelText(/Email:/i);
-      const passwordInput = screen.getByLabelText(/Password:/i);
-      const submitButton = screen.getByRole("button");
-
       await act(async () => {
         fireEvent.change(emailInput, { target: { value: "test@example.com" } });
         fireEvent.change(passwordInput, { target: { value: "short" } });
-        fireEvent.click(submitButton);
+        fireEvent.submit(form);
       });
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("パスワードは8文字以上である必要があります。")
-        ).toBeInTheDocument();
-      });
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        "パスワードは8文字以上である必要があります。",
+        { variant: "warning" }
+      );
     });
 
     it("有効な入力で登録処理が実行されユーザーがリダイレクトされること", async () => {
-      const pushMock = jest.fn();
-      (useRouter as jest.Mock).mockReturnValue({
-        push: pushMock,
-      });
-
-      render(<SignUpForm />);
-
-      const emailInput = screen.getByLabelText(/Email:/i);
-      const passwordInput = screen.getByLabelText(/Password:/i);
-      const submitButton = screen.getByRole("button");
-
       await act(async () => {
         fireEvent.change(emailInput, { target: { value: "test@example.com" } });
         fireEvent.change(passwordInput, { target: { value: "password123" } });
-        fireEvent.click(submitButton);
+        fireEvent.submit(form);
       });
 
-      await waitFor(() => {
-        expect(signUpUser).toHaveBeenCalledWith(
-          "test@example.com",
-          "password123"
-        );
-        expect(pushMock).toHaveBeenCalledWith("/dashboard");
-      });
+      expect(mockRouter.push).toHaveBeenCalledWith("/dashboard");
     });
 
     it("登録エラー時にエラーメッセージが表示されること", async () => {
-      render(<SignUpForm />);
-
-      const emailInput = screen.getByLabelText(/Email:/i);
-      const passwordInput = screen.getByLabelText(/Password:/i);
-      const submitButton = screen.getByRole("button");
-
       await act(async () => {
         fireEvent.change(emailInput, {
           target: { value: "error@example.com" },
         });
         fireEvent.change(passwordInput, { target: { value: "password123" } });
-        fireEvent.click(submitButton);
+        fireEvent.submit(form);
       });
 
-      await waitFor(() => {
-        expect(
-          screen.getByText(
-            "サインアップに失敗しました。もう一度お試しください。"
-          )
-        ).toBeInTheDocument();
-      });
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        "サインアップに失敗しました。もう一度お試しください。",
+        { variant: "error" }
+      );
+    });
+  });
+
+  it("送信中は入力とボタンが無効化されること", async () => {
+    const useAuthMock = require("@/app/Hooks/useAuth").useAuth;
+    useAuthMock.mockReturnValue({
+      authForm: {
+        email: "test@example.com",
+        setEmail: jest.fn(),
+        password: "password123",
+        setPassword: jest.fn(),
+      },
+      authAction: {
+        handleSignUp: mockHandleSignUp,
+        isSubmittingLoading: true,
+      },
+      authUserState: {
+        user: null,
+        isAuthLoading: false,
+        authError: null,
+      },
     });
 
-    it("送信中は入力とボタンが無効化されること", async () => {
-      (signUpUser as jest.Mock).mockImplementationOnce(() => {
-        return new Promise((resolve) => {
-          setTimeout(() => resolve({ email: "test@example.com" }), 100);
-        });
-      });
+    const { container } = render(<SignUpForm />);
+    const loadingEmailInput = container.querySelector("#signup-email");
+    const loadingPasswordInput = container.querySelector("#signup-password");
+    const loadingButton = container.querySelector('button[type="submit"]');
 
-      render(<SignUpForm />);
-
-      const emailInput = screen.getByLabelText(/Email:/i);
-      const passwordInput = screen.getByLabelText(/Password:/i);
-      const submitButton = screen.getByRole("button");
-
-      await act(async () => {
-        fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-        fireEvent.change(passwordInput, { target: { value: "password123" } });
-        fireEvent.click(submitButton);
-      });
-
-      expect(submitButton).toHaveTextContent("登録中...");
-      expect(emailInput).toBeDisabled();
-      expect(passwordInput).toBeDisabled();
-      expect(submitButton).toBeDisabled();
-    });
+    expect(loadingEmailInput).toBeDisabled();
+    expect(loadingPasswordInput).toBeDisabled();
+    expect(loadingButton).toBeDisabled();
+    expect(loadingButton).toHaveTextContent("登録中...");
   });
 });

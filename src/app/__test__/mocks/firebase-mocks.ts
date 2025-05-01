@@ -1,5 +1,17 @@
 import { User, UserCredential } from "firebase/auth";
 
+// Firebaseのauthモック
+export const mockAuth = {
+    currentUser: null,
+    onAuthStateChanged: jest.fn(),
+    signInWithEmailAndPassword: jest.fn(),
+    createUserWithEmailAndPassword: jest.fn(),
+    signOut: jest.fn()
+};
+
+// Firestore DBモック
+export const mockDb = {};
+
 export const mockUser: User = {
     uid: "test-user-id",
     email: "test@example.com",

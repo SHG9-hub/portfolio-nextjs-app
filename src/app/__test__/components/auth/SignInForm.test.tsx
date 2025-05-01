@@ -1,59 +1,48 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { act } from "react";
-import SignUpForm from "@/app/components/auth/SignUpForm";
+import SignInForm from "@/app/components/auth/SignInForm";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-const mockAuthForm = {
-  email: "",
-  password: "",
-};
-
-const mockRouter = {
-  push: jest.fn(),
-};
-
-const mockHandleSignUp = jest.fn((e) => {
-  e.preventDefault();
-  if (!mockAuthForm.email.includes("@")) {
-    mockEnqueueSnackbar("有効なメールアドレスを入力してください。", {
-      variant: "warning",
-    });
-    return;
-  }
-  if (mockAuthForm.password.length < 8) {
-    mockEnqueueSnackbar("パスワードは8文字以上である必要があります。", {
-      variant: "warning",
-    });
-    return;
-  }
-  if (mockAuthForm.email === "error@example.com") {
-    mockEnqueueSnackbar(
-      "サインアップに失敗しました。もう一度お試しください。",
-      { variant: "error" }
-    );
-    return;
-  }
-  mockRouter.push("/dashboard");
-});
-
 jest.mock("@/app/Hooks/useAuth", () => ({
   useAuth: jest.fn(() => ({
     authForm: {
-      email: mockAuthForm.email,
+      email: "",
       setEmail: jest.fn((value) => {
         mockAuthForm.email = value;
       }),
-      password: mockAuthForm.password,
+      password: "",
       setPassword: jest.fn((value) => {
         mockAuthForm.password = value;
       }),
     },
     authAction: {
-      handleSignUp: mockHandleSignUp,
+      handleSignIn: jest.fn((e) => {
+        e.preventDefault();
+        if (mockAuthForm.email === "invalid-email") {
+          mockEnqueueSnackbar("有効なメールアドレスを入力してください。", {
+            variant: "warning",
+          });
+          return;
+        }
+        if (!mockAuthForm.password) {
+          mockEnqueueSnackbar("パスワードを入力してください。", {
+            variant: "warning",
+          });
+          return;
+        }
+        if (mockAuthForm.email === "error@example.com") {
+          mockEnqueueSnackbar(
+            "サインインに失敗しました。もう一度お試しください。",
+            { variant: "error" }
+          );
+          return;
+        }
+        mockRouter.push("/dashboard");
+      }),
       isSubmittingLoading: false,
     },
     authUserState: {
@@ -71,7 +60,16 @@ jest.mock("notistack", () => ({
   })),
 }));
 
-describe("SignUpForm コンポーネントのテスト", () => {
+const mockAuthForm = {
+  email: "",
+  password: "",
+};
+
+const mockRouter = {
+  push: jest.fn(),
+};
+
+describe("SignInForm コンポーネントのテスト", () => {
   let emailInput: HTMLElement;
   let passwordInput: HTMLElement;
   let form: HTMLElement;
@@ -82,17 +80,19 @@ describe("SignUpForm コンポーネントのテスト", () => {
     mockAuthForm.email = "";
     mockAuthForm.password = "";
 
-    render(<SignUpForm />);
+    render(<SignInForm />);
     emailInput = screen.getByLabelText(/Email:/i);
     passwordInput = screen.getByLabelText(/Password:/i);
-    form = screen.getByTestId("signup-form");
+    form = screen.getByTestId("login-form");
   });
 
   describe("UIとフォーム動作のテスト", () => {
     it("無効なメールアドレスでエラーメッセージが表示されること", async () => {
       await act(async () => {
         fireEvent.change(emailInput, { target: { value: "invalid-email" } });
+        mockAuthForm.email = "invalid-email";
         fireEvent.change(passwordInput, { target: { value: "password123" } });
+        mockAuthForm.password = "password123";
         fireEvent.submit(form);
       });
 
@@ -102,40 +102,48 @@ describe("SignUpForm コンポーネントのテスト", () => {
       );
     });
 
-    it("短すぎるパスワードでエラーメッセージが表示されること", async () => {
+    it("パスワードが空の場合にエラーメッセージが表示されること", async () => {
       await act(async () => {
         fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-        fireEvent.change(passwordInput, { target: { value: "short" } });
+        mockAuthForm.email = "test@example.com";
+        fireEvent.change(passwordInput, { target: { value: "" } });
+        mockAuthForm.password = "";
         fireEvent.submit(form);
       });
 
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        "パスワードは8文字以上である必要があります。",
+        "パスワードを入力してください。",
         { variant: "warning" }
       );
     });
 
-    it("有効な入力で登録処理が実行されユーザーがリダイレクトされること", async () => {
+    it("有効な入力でログイン処理が実行されユーザーがリダイレクトされること", async () => {
       await act(async () => {
         fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+        mockAuthForm.email = "test@example.com";
         fireEvent.change(passwordInput, { target: { value: "password123" } });
+        mockAuthForm.password = "password123";
         fireEvent.submit(form);
       });
 
-      expect(mockRouter.push).toHaveBeenCalledWith("/dashboard");
+      await waitFor(() => {
+        expect(mockRouter.push).toHaveBeenCalledWith("/dashboard");
+      });
     });
 
-    it("登録エラー時にエラーメッセージが表示されること", async () => {
+    it("ログインエラー時にエラーメッセージが表示されること", async () => {
       await act(async () => {
         fireEvent.change(emailInput, {
           target: { value: "error@example.com" },
         });
+        mockAuthForm.email = "error@example.com";
         fireEvent.change(passwordInput, { target: { value: "password123" } });
+        mockAuthForm.password = "password123";
         fireEvent.submit(form);
       });
 
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        "サインアップに失敗しました。もう一度お試しください。",
+        "サインインに失敗しました。もう一度お試しください。",
         { variant: "error" }
       );
     });
@@ -151,7 +159,7 @@ describe("SignUpForm コンポーネントのテスト", () => {
         setPassword: jest.fn(),
       },
       authAction: {
-        handleSignUp: mockHandleSignUp,
+        handleSignIn: jest.fn(),
         isSubmittingLoading: true,
       },
       authUserState: {
@@ -161,14 +169,14 @@ describe("SignUpForm コンポーネントのテスト", () => {
       },
     });
 
-    const { container } = render(<SignUpForm />);
-    const loadingEmailInput = container.querySelector("#signup-email");
-    const loadingPasswordInput = container.querySelector("#signup-password");
+    const { container } = render(<SignInForm />);
+    const loadingEmailInput = container.querySelector("#login-email");
+    const loadingPasswordInput = container.querySelector("#login-password");
     const loadingButton = container.querySelector('button[type="submit"]');
 
     expect(loadingEmailInput).toBeDisabled();
     expect(loadingPasswordInput).toBeDisabled();
     expect(loadingButton).toBeDisabled();
-    expect(loadingButton).toHaveTextContent("登録中...");
+    expect(loadingButton).toHaveTextContent("ログイン中...");
   });
 });

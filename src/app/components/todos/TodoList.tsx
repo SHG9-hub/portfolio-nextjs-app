@@ -1,5 +1,6 @@
 import { Todo } from "@/app/lib/firebase/firebaseservice";
 import { Task } from "./Task";
+import { User } from "firebase/auth";
 
 type TodoListProps = {
   todoList: Todo[];

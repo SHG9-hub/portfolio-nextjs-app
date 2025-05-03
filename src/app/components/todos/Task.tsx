@@ -10,6 +10,7 @@ import {
   updateTodo,
 } from "@/app/lib/firebase/firebaseservice";
 import { mutate } from "swr";
+import { User } from "firebase/auth";
 
 type TaskProps = {
   todo: Todo;

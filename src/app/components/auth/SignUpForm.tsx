@@ -1,10 +1,10 @@
 "use client";
 
-import { useAuth } from "@/app/Hooks/useAuth";
+import { useTodo } from "@/app/Hooks/useTodo";
 import { CircularProgress } from "@mui/material";
 
 const SignUpForm = () => {
-  const { authAction, authForm } = useAuth();
+  const { authAction, authForm } = useTodo();
 
   if (authAction.isSubmittingLoading) {
     return <CircularProgress />;

@@ -2,13 +2,14 @@
 
 import { AddTodoForm } from "@/app/components/todos/AddTodoForm";
 import { TodoList } from "@/app/components/todos/TodoList";
-import { useAuth } from "../Hooks/useAuth";
-import { useTodo } from "../Hooks/useTodo";
 import { CircularProgress } from "@mui/material";
+import { useTodo } from "../Hooks/useTodo";
+import useSWR from "swr";
+import { fetchUserTodo } from "../lib/firebase/firebaseservice";
 
 export default function Dashboard() {
-  const { authUserState, authAction } = useAuth();
-  const { todos } = useTodo(authUserState.user?.uid);
+  const { authUserState, authAction } = useTodo();
+  const { data: todos } = useSWR(authUserState.user?.uid, fetchUserTodo);
 
   if (!todos) {
     return <CircularProgress />;

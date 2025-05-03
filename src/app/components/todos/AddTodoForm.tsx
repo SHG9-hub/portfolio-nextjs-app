@@ -6,14 +6,20 @@ import { Button } from "@mui/material";
 import React, { useState } from "react";
 import { User } from "firebase/auth";
 import { mutate } from "swr";
-import { useTodo } from "@/app/Hooks/useTodo";
 
 type AddTodoFormProps = {
   user: User;
 };
 
 export const AddTodoForm = ({ user }: AddTodoFormProps) => {
-  const { inputValue, setInputValue, handleAddTodo } = useTodo(user.uid);
+  const [inputValue, setInputValue] = useState("");
+
+  const handleAddTodo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await addTodo({ title: inputValue, completed: false, userId: user.uid });
+    setInputValue("");
+    mutate(user.uid);
+  };
 
   return (
     <form className="flex" onSubmit={handleAddTodo}>

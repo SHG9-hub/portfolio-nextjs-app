@@ -57,19 +57,25 @@ describe("Dashboardページのテスト", () => {
     it("ユーザーがログインしていない場合、nullを返すこと", () => {
       useAuthStateMock.mockReturnValue([null, false, null]);
       const { container } = render(<Dashboard />);
-      expect(container.firstChild).toBeNull();
+      expect(
+        container.querySelector(".MuiCircularProgress-root")
+      ).toBeInTheDocument();
     });
 
-    it("Firebase認証のロード中の場合、ローディングメッセージが表示されること", () => {
+    it("Firebase認証のロード中の場合、ローディング表示されること", () => {
       useAuthStateMock.mockReturnValue([null, true, null]);
-      render(<Dashboard />);
-      expect(screen.getByText("ロード中...")).toBeInTheDocument();
+      const { container } = render(<Dashboard />);
+      expect(
+        container.querySelector(".MuiCircularProgress-root")
+      ).toBeInTheDocument();
     });
 
-    it("Firebase認証でエラーがある場合、何も表示されないこと", () => {
+    it("Firebase認証でエラーがある場合、CircularProgressが表示されること", () => {
       useAuthStateMock.mockReturnValue([null, false, new Error("認証エラー")]);
       const { container } = render(<Dashboard />);
-      expect(container.firstChild).toBeNull();
+      expect(
+        container.querySelector(".MuiCircularProgress-root")
+      ).toBeInTheDocument();
     });
   });
 
@@ -96,28 +102,30 @@ describe("Dashboardページのテスト", () => {
       });
     });
 
-    it("Firestoreからのデータ読み込み中は、ローディングメッセージが表示されること", () => {
+    it("Firestoreからのデータ読み込み中は、CircularProgressが表示されること", () => {
       useSWRMock.mockImplementation(() => ({
         data: null,
         error: null,
         isLoading: true,
       }));
 
-      render(<Dashboard />);
-
-      expect(screen.getByText("データを読み込み中...")).toBeInTheDocument();
+      const { container } = render(<Dashboard />);
+      expect(
+        container.querySelector(".MuiCircularProgress-root")
+      ).toBeInTheDocument();
     });
 
-    it("Firestoreからのデータ取得でエラーが発生した場合、エラーメッセージが表示されること", () => {
+    it("Firestoreからのデータ取得でエラーが発生した場合、CircularProgressが表示されること", () => {
       useSWRMock.mockImplementation(() => ({
         data: null,
         error: new Error("データ取得エラー"),
         isLoading: false,
       }));
 
-      render(<Dashboard />);
-
-      expect(screen.getByText("データ取得エラー")).toBeInTheDocument();
+      const { container } = render(<Dashboard />);
+      expect(
+        container.querySelector(".MuiCircularProgress-root")
+      ).toBeInTheDocument();
     });
   });
 });

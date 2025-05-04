@@ -6,8 +6,30 @@ import { useRouter } from "next/navigation";
 import { Validator } from "../lib/utility/validators";
 import { useState } from "react";
 
-export const useAuth = () => {
-    const [user, isAuthLoading, authError] = useAuthState(auth);
+type AuthFormState = {
+    email: string;
+    setEmail: (v: string) => void;
+    password: string;
+    setPassword: (v: string) => void;
+}
+
+type AuthAction = {
+    handleSignIn: (e: React.FormEvent) => Promise<void>;
+    handleSignUp: (e: React.FormEvent) => Promise<void>;
+    handleSignOut: () => Promise<void>;
+    isSubmittingLoading: boolean;
+}
+
+type AuthUserState = {
+    user: NonNullable<ReturnType<typeof useAuthState>[0]>;
+}
+
+export const useTodo = (): {
+    authForm: AuthFormState;
+    authAction: AuthAction;
+    authUserState: AuthUserState;
+} => {
+    const [user] = useAuthState(auth);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isSubmittingLoading, setIsSubmittingLoading] = useState(false);
@@ -28,15 +50,12 @@ export const useAuth = () => {
 
     const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!validateSignInData()) {
             return;
         }
-
         setIsSubmittingLoading(true);
         const user = await signInUser(email, password);
         setIsSubmittingLoading(false);
-
         if (!user) {
             enqueueSnackbar('サインインに失敗しました。もう一度お試しください。', { variant: 'error' });
             return;
@@ -101,9 +120,7 @@ export const useAuth = () => {
             isSubmittingLoading,
         },
         authUserState: {
-            user,
-            isAuthLoading,
-            authError
+            user: user!,
         }
     };
 }

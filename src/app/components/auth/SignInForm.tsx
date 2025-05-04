@@ -1,9 +1,14 @@
 "use client";
 
-import { useAuth } from "@/app/Hooks/useAuth";
+import { useTodo } from "@/app/Hooks/useTodo";
+import { CircularProgress } from "@mui/material";
 
 const SignInForm = () => {
-  const { authAction, authForm } = useAuth();
+  const { authAction, authForm } = useTodo();
+
+  if (authAction.isSubmittingLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <form onSubmit={authAction.handleSignIn} data-testid="login-form">
@@ -16,7 +21,6 @@ const SignInForm = () => {
           value={authForm.email}
           onChange={(e) => authForm.setEmail(e.target.value)}
           required
-          disabled={authAction.isSubmittingLoading}
         />
       </div>
       <div>
@@ -27,13 +31,10 @@ const SignInForm = () => {
           value={authForm.password}
           onChange={(e) => authForm.setPassword(e.target.value)}
           required
-          disabled={authAction.isSubmittingLoading}
           autoComplete="current-password"
         />
       </div>
-      <button type="submit" disabled={authAction.isSubmittingLoading}>
-        {authAction.isSubmittingLoading ? "ログイン中..." : "Login"}
-      </button>
+      <button type="submit">サインイン</button>
     </form>
   );
 };

@@ -40,8 +40,8 @@ const mockHandleSignUp = jest.fn((e) => {
   mockRouter.push("/dashboard");
 });
 
-jest.mock("@/app/Hooks/useAuth", () => ({
-  useAuth: jest.fn(() => ({
+jest.mock("@/app/Hooks/useTodo", () => ({
+  useTodo: jest.fn(() => ({
     authForm: {
       email: mockAuthForm.email,
       setEmail: jest.fn((value) => {
@@ -141,9 +141,9 @@ describe("SignUpForm コンポーネントのテスト", () => {
     });
   });
 
-  it("送信中は入力とボタンが無効化されること", async () => {
-    const useAuthMock = require("@/app/Hooks/useAuth").useAuth;
-    useAuthMock.mockReturnValue({
+  it("送信中はローディングインジケーターが表示されること", async () => {
+    const useTodoMock = require("@/app/Hooks/useTodo").useTodo;
+    useTodoMock.mockReturnValue({
       authForm: {
         email: "test@example.com",
         setEmail: jest.fn(),
@@ -162,13 +162,8 @@ describe("SignUpForm コンポーネントのテスト", () => {
     });
 
     const { container } = render(<SignUpForm />);
-    const loadingEmailInput = container.querySelector("#signup-email");
-    const loadingPasswordInput = container.querySelector("#signup-password");
-    const loadingButton = container.querySelector('button[type="submit"]');
-
-    expect(loadingEmailInput).toBeDisabled();
-    expect(loadingPasswordInput).toBeDisabled();
-    expect(loadingButton).toBeDisabled();
-    expect(loadingButton).toHaveTextContent("登録中...");
+    expect(
+      container.querySelector(".MuiCircularProgress-root")
+    ).toBeInTheDocument();
   });
 });

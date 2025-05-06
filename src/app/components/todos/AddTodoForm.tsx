@@ -1,8 +1,6 @@
-"use client";
-
 import { addTodo } from "@/app/lib/firebase/firebaseservice";
 import { Send } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Button, Input } from "@mui/material";
 import React, { useState } from "react";
 import { User } from "firebase/auth";
 import { mutate } from "swr";
@@ -22,13 +20,19 @@ export const AddTodoForm = ({ user }: AddTodoFormProps) => {
   };
 
   return (
-    <form className="flex" onSubmit={handleAddTodo}>
-      <input
+    <form className="flex flex-row gap-2" onSubmit={handleAddTodo}>
+      <label htmlFor="new-todo" className="sr-only">
+        新しいタスクの名前
+      </label>
+      <Input
+        id="new-todo"
         type="text"
         placeholder="新しいタスクを入力してください"
+        autoComplete="off"
         className="grow rounded-s bg-slate-200 p-2"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
+        autoFocus
       />
       <Button
         disabled={!inputValue.trim()}

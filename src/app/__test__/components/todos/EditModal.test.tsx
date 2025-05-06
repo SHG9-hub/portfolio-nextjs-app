@@ -47,7 +47,7 @@ describe("EditModalコンポーネントのテスト", () => {
 
     it("更新ボタンをクリックするとupdateTodo関数が呼ばれること", async () => {
       const editingForm = screen.getByRole("textbox");
-      const updateButton = screen.getByRole("button", { name: "更新" });
+      const updateButton = screen.getByLabelText("タスクを更新");
 
       fireEvent.change(editingForm, {
         target: { value: "更新されたタイトル" },

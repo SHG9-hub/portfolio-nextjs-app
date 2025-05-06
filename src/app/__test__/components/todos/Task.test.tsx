@@ -36,7 +36,7 @@ describe("Taskコンポーネントのテスト", () => {
   });
 
   it("削除ボタンが表示されること", () => {
-    const deleteButton = screen.getByLabelText("delete");
+    const deleteButton = screen.getByLabelText(`${todo.title}を削除`);
     expect(deleteButton).toBeInTheDocument();
   });
 
@@ -55,7 +55,7 @@ describe("Taskコンポーネントのテスト", () => {
   it("削除ボタンをクリックして確認ダイアログでOKを選択した場合、Todoが削除されページが更新されること", async () => {
     window.confirm = jest.fn().mockImplementation(() => true);
 
-    const deleteButton = screen.getByLabelText("delete");
+    const deleteButton = screen.getByLabelText(`${todo.title}を削除`);
     fireEvent.click(deleteButton);
 
     await waitFor(() => {
@@ -68,7 +68,7 @@ describe("Taskコンポーネントのテスト", () => {
   it("削除ボタンをクリックして確認ダイアログでキャンセルを選択した場合、Todoが削除されないこと", async () => {
     window.confirm = jest.fn().mockImplementation(() => false);
 
-    const deleteButton = screen.getByLabelText("delete");
+    const deleteButton = screen.getByLabelText(`${todo.title}を削除`);
     fireEvent.click(deleteButton);
 
     await waitFor(() => {

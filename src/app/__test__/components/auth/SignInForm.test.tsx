@@ -83,7 +83,7 @@ describe("SignInForm コンポーネントのテスト", () => {
     render(<SignInForm />);
     emailInput = screen.getByLabelText(/Email:/i);
     passwordInput = screen.getByLabelText(/Password:/i);
-    form = screen.getByTestId("login-form");
+    form = screen.getByTestId("signin-form");
   });
 
   describe("UIとフォーム動作のテスト", () => {

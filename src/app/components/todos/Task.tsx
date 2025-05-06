@@ -1,7 +1,5 @@
-"use client";
-
-import { Delete } from "@mui/icons-material";
-import { Button, IconButton } from "@mui/material";
+import { Delete, Edit } from "@mui/icons-material";
+import { Button, Checkbox, IconButton, Paper, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { EditModal } from "./EditModal";
 import {
@@ -39,33 +37,55 @@ export const Task = (props: TaskProps) => {
   };
 
   return (
-    <div
+    <Paper
       key={props.todo.id}
-      className="flex items-center gap-3 rounded bg-white p-2"
+      elevation={1}
+      className="flex items-center gap-3 rounded bg-white p-3 mb-2 transition-all hover:shadow-md"
     >
-      <label className="flex grow items-center gap-3 hover:cursor-pointer">
+      <label
+        className="flex grow items-center gap-3 hover:cursor-pointer"
+        htmlFor={`task-checkbox-${props.todo.id}`}
+      >
         <div className="flex items-center">
-          <input
-            type="checkbox"
-            className="size-5"
+          <Checkbox
+            id={`task-checkbox-${props.todo.id}`}
             checked={isCompleted}
             onChange={handleUpdataTodoState}
+            color="primary"
+            aria-label={`${isCompleted ? "完了済み" : "未完了"}:${
+              props.todo.title
+            }`}
           />
         </div>
-        <span>{props.todo.title}</span>
+        <Typography
+          className={`${
+            isCompleted ? "line-through text-gray-500" : "text-gray-800"
+          }`}
+        >
+          {props.todo.title}
+        </Typography>
       </label>
-      <Button onClick={toggle} variant="outlined" color="info" size="medium">
-        編集
-      </Button>
-      <IconButton
-        onClick={handleDelete}
-        aria-label="delete"
-        size="large"
-        color="error"
-      >
-        <Delete />
-      </IconButton>
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={toggle}
+          variant="outlined"
+          color="info"
+          size="small"
+          startIcon={<Edit />}
+          aria-label={`${props.todo.title}を編集`}
+        >
+          編集
+        </Button>
+        <IconButton
+          onClick={handleDelete}
+          aria-label={`${props.todo.title}を削除`}
+          size="medium"
+          color="error"
+        >
+          <Delete />
+        </IconButton>
+      </div>
       <EditModal todo={props.todo} isOpen={isOpen} modalToggle={toggle} />
-    </div>
+    </Paper>
   );
 };

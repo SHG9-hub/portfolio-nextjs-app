@@ -11,26 +11,24 @@ const SignInForm = () => {
   }
 
   return (
-    <form onSubmit={authAction.handleSignIn} data-testid="login-form">
+    <form onSubmit={authAction.handleSignIn} data-testid="signin-form">
       <h2>Login</h2>
       <div>
-        <label htmlFor="login-email">Email:</label>
+        <label htmlFor="signin-email">Email:</label>
         <input
           type="email"
-          id="login-email"
+          id="signin-email"
           value={authForm.email}
           onChange={(e) => authForm.setEmail(e.target.value)}
-          required
         />
       </div>
       <div>
-        <label htmlFor="login-password">Password:</label>
+        <label htmlFor="signin-password">Password:</label>
         <input
           type="password"
-          id="login-password"
+          id="signin-password"
           value={authForm.password}
           onChange={(e) => authForm.setPassword(e.target.value)}
-          required
           autoComplete="current-password"
         />
       </div>

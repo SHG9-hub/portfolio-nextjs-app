@@ -95,9 +95,6 @@ describe("firebaseservice関数のテスト", () => {
             collection.mockReturnValue("todos-collection");
             addDoc.mockRejectedValue(new Error("Add error"));
 
-            // alertをモック化
-            window.alert = jest.fn();
-
             const newTodo = {
                 title: "新しいタスク",
                 completed: false,
@@ -107,7 +104,6 @@ describe("firebaseservice関数のテスト", () => {
             const result = await addTodo(newTodo);
 
             expect(result).toBe(false);
-            expect(window.alert).toHaveBeenCalledWith("タスクの追加に失敗しました。再度お試しください。");
         });
     });
 
@@ -130,16 +126,12 @@ describe("firebaseservice関数のテスト", () => {
             doc.mockReturnValue("todo-doc-ref");
             updateDoc.mockRejectedValue(new Error("Update error"));
 
-            // alertをモック化
-            window.alert = jest.fn();
-
             const todoId = "test-todo-id";
             const updates = { title: "更新されたタイトル" };
 
             const result = await updateTodo(todoId, updates);
 
             expect(result).toBe(false);
-            expect(window.alert).toHaveBeenCalledWith("Todoの更新中にエラーが発生しました。");
         });
     });
 
@@ -155,11 +147,12 @@ describe("firebaseservice関数のテスト", () => {
             expect(deleteDoc).toHaveBeenCalledWith("todo-doc-ref");
         });
 
-        it("エラーが発生した場合、例外が伝播すること", async () => {
+        it("エラーが発生した場合、falseを返すこと", async () => {
             doc.mockReturnValue("todo-doc-ref");
             deleteDoc.mockRejectedValue(new Error("削除エラー"));
 
-            await expect(deleteTodo("test-todo-id")).rejects.toThrow("削除エラー");
+            const result = await deleteTodo("test-todo-id");
+            expect(result).toBe(false);
         });
     });
 }); 

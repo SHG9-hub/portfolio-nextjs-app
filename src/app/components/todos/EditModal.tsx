@@ -8,7 +8,8 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import React, { useState } from "react";
+import { enqueueSnackbar } from "notistack";
+import React, { useRef, useState } from "react";
 import { mutate } from "swr";
 
 type ModalProps = {
@@ -23,8 +24,9 @@ export const EditModal = (props: ModalProps) => {
   const handleUpdataTodoTitle = async (e: React.FormEvent) => {
     e.preventDefault();
     await updateTodo(props.todo.id, { title: updataTitle });
-    mutate(props.todo.userId);
+    enqueueSnackbar("タスクを更新しました！", { variant: "success" });
     props.modalToggle();
+    mutate(props.todo.userId);
   };
 
   return (

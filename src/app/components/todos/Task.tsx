@@ -8,6 +8,7 @@ import {
   updateTodo,
 } from "@/app/lib/firebase/firebaseservice";
 import { mutate } from "swr";
+import { enqueueSnackbar } from "notistack";
 
 type TaskProps = {
   todo: Todo;
@@ -32,6 +33,7 @@ export const Task = (props: TaskProps) => {
     const confirmed = window.confirm("本当に削除しますか？");
     if (confirmed) {
       await deleteTodo(props.todo.id);
+      enqueueSnackbar("タスクを削除しました！", { variant: "success" });
       mutate(props.todo.userId);
     }
   };

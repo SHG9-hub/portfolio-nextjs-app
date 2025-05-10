@@ -4,6 +4,7 @@ import { Button, Input } from "@mui/material";
 import React, { useState } from "react";
 import { User } from "firebase/auth";
 import { mutate } from "swr";
+import { enqueueSnackbar } from "notistack";
 
 type AddTodoFormProps = {
   user: User;
@@ -15,6 +16,7 @@ export const AddTodoForm = ({ user }: AddTodoFormProps) => {
   const handleAddTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     await addTodo({ title: inputValue, completed: false, userId: user.uid });
+    enqueueSnackbar("タスクを追加しました！", { variant: "success" });
     setInputValue("");
     mutate(user.uid);
   };

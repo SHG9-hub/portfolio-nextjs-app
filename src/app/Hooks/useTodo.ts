@@ -1,7 +1,7 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../lib/firebase/firebase";
 import { signInUser, signOutUser, signUpUser } from "../lib/firebase/firebaseauth";
-import { useSnackbar } from "notistack"
+import { enqueueSnackbar, useSnackbar } from "notistack"
 import { useRouter } from "next/navigation";
 import { Validator } from "../lib/utility/validators";
 import { useState } from "react";
@@ -33,7 +33,6 @@ export const useTodo = (): {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isSubmittingLoading, setIsSubmittingLoading] = useState(false);
-    const { enqueueSnackbar } = useSnackbar();
     const router = useRouter();
 
     const validateSignInData = (): boolean => {
@@ -60,6 +59,7 @@ export const useTodo = (): {
             enqueueSnackbar('サインインに失敗しました。もう一度お試しください。', { variant: 'error' });
             return;
         }
+        enqueueSnackbar('サインインしました！', { variant: 'success' });
         router.push("/dashboard");
     };
 
@@ -91,7 +91,7 @@ export const useTodo = (): {
             enqueueSnackbar('サインアップに失敗しました。もう一度お試しください。', { variant: 'error' });
             return;
         }
-
+        enqueueSnackbar('サインアップしました！', { variant: 'success' });
         router.push("/dashboard");
     };
 
@@ -103,6 +103,7 @@ export const useTodo = (): {
             enqueueSnackbar('サインアウト中にエラーが発生しました。', { variant: 'error' });
             return;
         }
+        enqueueSnackbar('サインアウトしました！', { variant: 'success' });
         router.push("/")
     };
 

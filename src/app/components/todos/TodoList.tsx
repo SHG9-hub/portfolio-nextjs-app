@@ -9,7 +9,7 @@ export const TodoList = (props: TodoListProps) => {
   return (
     <div className="space-y-3">
       {props.todoList.map((todo: Todo) => (
-        <Task todo={todo} key={todo.title} />
+        <Task todo={todo} key={todo.id} />
       ))}
     </div>
   );

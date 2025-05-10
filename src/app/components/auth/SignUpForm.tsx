@@ -1,40 +1,67 @@
 "use client";
 
 import { useTodo } from "@/app/Hooks/useTodo";
-import { CircularProgress } from "@mui/material";
+import {
+  CircularProgress,
+  Box,
+  Typography,
+  TextField,
+  Button,
+} from "@mui/material";
 
 const SignUpForm = () => {
   const { authAction, authForm } = useTodo();
 
   if (authAction.isSubmittingLoading) {
-    return <CircularProgress />;
+    return (
+      <div className="flex justify-center items-center min-h-[200px] w-full">
+        <CircularProgress size={60} />
+      </div>
+    );
   }
 
   return (
-    <form onSubmit={authAction.handleSignUp} data-testid="signup-form">
-      <h2>Sign Up</h2>
-      <div>
-        <label htmlFor="signup-email">Email:</label>
-        <input
-          type="email"
-          id="signup-email"
-          value={authForm.email}
-          onChange={(e) => authForm.setEmail(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="signup-password">Password:</label>
-        <input
-          type="password"
-          id="signup-password"
-          value={authForm.password}
-          onChange={(e) => authForm.setPassword(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit">サインアップ</button>
-    </form>
+    <Box
+      component="form"
+      onSubmit={authAction.handleSignUp}
+      data-testid="signup-form"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        alignItems: "center",
+        p: 3,
+        border: "1px solid #ccc",
+        borderRadius: 2,
+      }}
+    >
+      <Typography variant="h6" component="h2">
+        Sign Up
+      </Typography>
+      <TextField
+        label="Email"
+        type="email"
+        id="signup-email"
+        value={authForm.email}
+        onChange={(e) => authForm.setEmail(e.target.value)}
+        autoComplete="current-password"
+        required
+        fullWidth
+      />
+      <TextField
+        label="Password"
+        type="password"
+        id="signup-password"
+        value={authForm.password}
+        onChange={(e) => authForm.setPassword(e.target.value)}
+        autoComplete="current-password"
+        required
+        fullWidth
+      />
+      <Button type="submit" variant="contained">
+        サインアップ
+      </Button>
+    </Box>
   );
 };
 

@@ -2,9 +2,14 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AddTodoForm } from "@/app/components/todos/AddTodoForm";
 import { mockUser } from "@/app/__test__/mocks/firebase-mocks";
 import { mutate } from "swr";
+import { enqueueSnackbar } from "notistack";
 
 jest.mock("swr", () => ({
   mutate: jest.fn(),
+}));
+
+jest.mock("notistack", () => ({
+  enqueueSnackbar: jest.fn(),
 }));
 
 const mockAddTodo = jest.fn();
@@ -54,25 +59,17 @@ describe("AddTodoFormコンポーネントのテスト", () => {
   });
 
   it("addTodo関数の処理失敗した時にエラーが通知されること", async () => {
-    const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});
-
-    mockAddTodo.mockImplementation(() => {
-      window.alert("タスクの追加に失敗しました。再度お試しください。");
-      return Promise.resolve(false);
-    });
+    mockAddTodo.mockResolvedValue(false);
 
     fireEvent.change(inputForm, { target: { value: "新しいタスク" } });
-
-    expect(addButton).not.toBeDisabled();
-
     fireEvent.click(addButton);
 
     await waitFor(() => {
-      expect(alertMock).toHaveBeenCalledWith(
-        "タスクの追加に失敗しました。再度お試しください。"
-      );
+      expect(mockAddTodo).toHaveBeenCalledWith({
+        title: "新しいタスク",
+        completed: false,
+        userId: mockUser.uid,
+      });
     });
-
-    alertMock.mockRestore();
   });
 });

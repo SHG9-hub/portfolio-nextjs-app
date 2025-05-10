@@ -83,8 +83,8 @@ describe("SignUpForm コンポーネントのテスト", () => {
     mockAuthForm.password = "";
 
     render(<SignUpForm />);
-    emailInput = screen.getByLabelText(/Email:/i);
-    passwordInput = screen.getByLabelText(/Password:/i);
+    emailInput = screen.getByLabelText(/Email/i);
+    passwordInput = screen.getByLabelText(/Password/i);
     form = screen.getByTestId("signup-form");
   });
 

@@ -1,5 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore/lite"
 import { db } from "./firebase"
+import { enqueueSnackbar } from "notistack";
 
 export type Todo = {
     id: string;
@@ -31,7 +32,7 @@ const addTodo = async (todoData: Omit<Todo, 'id'>) => {
         await addDoc(collection(db, "todos"), todoData);
         return true;
     } catch (error) {
-        alert("タスクの追加に失敗しました。再度お試しください。")
+        enqueueSnackbar('タスクの追加に失敗しました。もう一度お試しください。', { variant: 'error' });
         return false;
     }
 }
@@ -42,13 +43,18 @@ const updateTodo = async (todoId: string, updates: { title?: string; completed?:
         await updateDoc(todoRef, updates);
         return true;
     } catch (error) {
-        alert("Todoの更新中にエラーが発生しました。");
+        enqueueSnackbar('タスクの更新に失敗しました。もう一度お試しください。', { variant: 'error' });
         return false;
     }
 };
 
 const deleteTodo = async (todoId: string) => {
-    await deleteDoc(doc(db, "todos", todoId));
+    try {
+        await deleteDoc(doc(db, "todos", todoId));
+    } catch (error) {
+        enqueueSnackbar('タスクの削除に失敗しました。もう一度お試しください。', { variant: 'error' });
+        return false;
+    }
 }
 
 export { addTodo, fetchUserTodo, updateTodo, deleteTodo }

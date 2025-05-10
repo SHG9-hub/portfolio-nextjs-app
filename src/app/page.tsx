@@ -1,9 +1,7 @@
 "use client";
 
-import { CircularProgress } from "@mui/material";
 import SignInForm from "./components/auth/SignInForm";
 import SignUpForm from "./components/auth/SignUpForm";
-import { useAuth } from "./Hooks/useTodo";
 
 export default function Home() {
   return (

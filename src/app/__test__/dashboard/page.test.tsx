@@ -94,7 +94,7 @@ describe("Dashboardページのテスト", () => {
       render(<Dashboard />);
 
       expect(
-        screen.getByText(`ようこそ, ${mockUser.email}!`)
+        screen.getByText(`${mockUser.email}でログイン中。`)
       ).toBeInTheDocument();
 
       mockTodoList.forEach((todo) => {

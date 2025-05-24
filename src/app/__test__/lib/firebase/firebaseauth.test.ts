@@ -1,5 +1,6 @@
 import { signUpUser, signInUser, signOutUser } from '@/app/lib/firebase/firebaseauth';
 import { mockUserCredential } from '../../mocks/firebase-mocks';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 jest.mock('firebase/auth', () => ({
     createUserWithEmailAndPassword: jest.fn(() => Promise.resolve(mockUserCredential)),
@@ -36,8 +37,7 @@ describe('Firebase認証関数のテスト', () => {
         });
 
         it('エラー時にundefinedを返すこと', async () => {
-            const createUserWithEmailAndPassword = require('firebase/auth').createUserWithEmailAndPassword;
-            createUserWithEmailAndPassword.mockImplementationOnce(() => Promise.reject(new Error('登録エラー')));
+            (createUserWithEmailAndPassword as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('登録エラー')));
 
             const user = await signUpUser('error@example.com', 'password');
 
@@ -57,8 +57,7 @@ describe('Firebase認証関数のテスト', () => {
         });
 
         it('エラー時に早期returnで処理が中断されること', async () => {
-            const signInWithEmailAndPassword = require('firebase/auth').signInWithEmailAndPassword;
-            signInWithEmailAndPassword.mockImplementationOnce(() => Promise.reject(new Error('サインインエラー')));
+            (signInWithEmailAndPassword as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('サインインエラー')));
 
             const user = await signInUser('error@example.com', 'password');
 
@@ -68,16 +67,13 @@ describe('Firebase認証関数のテスト', () => {
 
     describe('signOutUser', () => {
         it('"signOutUser"が実行され正常にサインアウトできること', async () => {
-            const signOut = require('firebase/auth').signOut;
-
             await signOutUser();
 
-            expect(signOut).toHaveBeenCalled();
+            expect(signOut as jest.Mock).toHaveBeenCalled();
         });
 
         it('エラー時にもエラーをスローしないこと', async () => {
-            const signOut = require('firebase/auth').signOut;
-            signOut.mockImplementationOnce(() => Promise.reject(new Error('サインアウトエラー')));
+            (signOut as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('サインアウトエラー')));
 
             await expect(signOutUser()).resolves.not.toThrow();
         });

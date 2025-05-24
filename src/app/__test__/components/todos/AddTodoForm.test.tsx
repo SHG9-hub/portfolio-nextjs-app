@@ -2,20 +2,15 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AddTodoForm } from "@/app/components/todos/AddTodoForm";
 import { mockUser } from "@/app/__test__/mocks/firebase-mocks";
 import { mutate } from "swr";
-import { enqueueSnackbar } from "notistack";
 
 jest.mock("swr", () => ({
   mutate: jest.fn(),
 }));
 
-jest.mock("notistack", () => ({
-  enqueueSnackbar: jest.fn(),
-}));
-
 const mockAddTodo = jest.fn();
 
 jest.mock("@/app/lib/firebase/firebaseservice", () => ({
-  addTodo: (...args: any[]) => mockAddTodo(...args),
+  addTodo: (...args: unknown[]) => mockAddTodo(...args),
 }));
 
 describe("AddTodoFormコンポーネントのテスト", () => {

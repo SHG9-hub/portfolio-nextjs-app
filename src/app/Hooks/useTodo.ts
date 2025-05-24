@@ -1,7 +1,7 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../lib/firebase/firebase";
 import { signInUser, signOutUser, signUpUser } from "../lib/firebase/firebaseauth";
-import { enqueueSnackbar, useSnackbar } from "notistack"
+import { enqueueSnackbar } from "notistack"
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

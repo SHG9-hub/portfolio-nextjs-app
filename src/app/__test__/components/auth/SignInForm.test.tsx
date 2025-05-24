@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { act } from "react";
 import SignInForm from "@/app/components/auth/SignInForm";
+import { useTodo } from "@/app/Hooks/useTodo";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -11,7 +12,8 @@ jest.mock("react-hook-form", () => ({
   useForm: () => ({
     register: jest.fn(),
     handleSubmit:
-      (fn: (data: any) => void) => (e: { preventDefault: () => void }) => {
+      (fn: (data: { email: string; password: string }) => void) =>
+      (e: { preventDefault: () => void }) => {
         e.preventDefault();
         if (Object.keys(mockErrors).length === 0) {
           fn(mockFormData);
@@ -105,8 +107,7 @@ describe("SignInForm コンポーネントのテスト", () => {
         fireEvent.submit(form);
       });
 
-      const useTodoMock = require("@/app/Hooks/useTodo").useTodo;
-      const handleSignInMock = useTodoMock().authAction.handleSignIn;
+      const handleSignInMock = useTodo().authAction.handleSignIn;
       expect(handleSignInMock).not.toHaveBeenCalled();
       expect(mockErrors.email).toBeDefined();
       expect(mockErrors.email.message).toBe("無効なメールアドレス形式です。");
@@ -125,8 +126,7 @@ describe("SignInForm コンポーネントのテスト", () => {
         fireEvent.submit(form);
       });
 
-      const useTodoMock = require("@/app/Hooks/useTodo").useTodo;
-      const handleSignInMock = useTodoMock().authAction.handleSignIn;
+      const handleSignInMock = useTodo().authAction.handleSignIn;
       expect(handleSignInMock).not.toHaveBeenCalled();
       expect(mockErrors.password).toBeDefined();
       expect(mockErrors.password.message).toBe(
@@ -171,8 +171,7 @@ describe("SignInForm コンポーネントのテスト", () => {
   });
 
   it("送信中はローディングインジケーターが表示されること", async () => {
-    const useTodoMock = require("@/app/Hooks/useTodo").useTodo;
-    useTodoMock.mockReturnValue({
+    (useTodo as jest.Mock).mockReturnValue({
       authAction: {
         handleSignIn: jest.fn(),
         isSubmittingLoading: true,

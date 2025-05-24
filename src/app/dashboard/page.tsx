@@ -6,7 +6,6 @@ import { CircularProgress } from "@mui/material";
 import { useTodo } from "../Hooks/useTodo";
 import useSWR from "swr";
 import { fetchUserTodo } from "../lib/firebase/firebaseservice";
-import { enqueueSnackbar } from "notistack";
 
 export default function Dashboard() {
   const { authUserState, authAction } = useTodo();

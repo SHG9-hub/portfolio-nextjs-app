@@ -10,7 +10,7 @@ jest.mock("swr", () => ({
 const mockUpdateTodo = jest.fn();
 
 jest.mock("@/app/lib/firebase/firebaseservice", () => ({
-  updateTodo: (...args: any[]) => mockUpdateTodo(...args),
+  updateTodo: (...args: unknown[]) => mockUpdateTodo(...args),
 }));
 
 describe("EditModalコンポーネントのテスト", () => {

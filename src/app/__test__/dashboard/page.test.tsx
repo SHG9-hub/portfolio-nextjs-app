@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react";
 import Dashboard from "@/app/dashboard/page";
 import { mockUser } from "@/app/__test__/mocks/firebase-mocks";
 import { mockTodoList } from "@/app/__test__/mocks/todo-mocks";
+import { useAuthState } from "react-firebase-hooks/auth";
+import useSWR from "swr";
 
 jest.mock("@/app/lib/firebase/firebaseservice", () => ({
   fetchUserTodo: jest.fn(),
@@ -40,13 +42,10 @@ jest.mock("notistack", () => ({
 }));
 
 describe("Dashboardページのテスト", () => {
-  const useAuthStateMock = require("react-firebase-hooks/auth").useAuthState;
-  const useSWRMock = require("swr").default;
-
   beforeEach(() => {
-    useAuthStateMock.mockReset();
-    useSWRMock.mockReset();
-    useSWRMock.mockImplementation(() => ({
+    (useAuthState as jest.Mock).mockReset();
+    (useSWR as jest.Mock).mockReset();
+    (useSWR as jest.Mock).mockImplementation(() => ({
       data: null,
       error: null,
       isLoading: false,
@@ -55,7 +54,7 @@ describe("Dashboardページのテスト", () => {
 
   describe("認証状態に応じたテスト", () => {
     it("ユーザーがログインしていない場合、nullを返すこと", () => {
-      useAuthStateMock.mockReturnValue([null, false, null]);
+      (useAuthState as jest.Mock).mockReturnValue([null, false, null]);
       const { container } = render(<Dashboard />);
       expect(
         container.querySelector(".MuiCircularProgress-root")
@@ -63,7 +62,7 @@ describe("Dashboardページのテスト", () => {
     });
 
     it("Firebase認証のロード中の場合、ローディング表示されること", () => {
-      useAuthStateMock.mockReturnValue([null, true, null]);
+      (useAuthState as jest.Mock).mockReturnValue([null, true, null]);
       const { container } = render(<Dashboard />);
       expect(
         container.querySelector(".MuiCircularProgress-root")
@@ -71,7 +70,11 @@ describe("Dashboardページのテスト", () => {
     });
 
     it("Firebase認証でエラーがある場合、CircularProgressが表示されること", () => {
-      useAuthStateMock.mockReturnValue([null, false, new Error("認証エラー")]);
+      (useAuthState as jest.Mock).mockReturnValue([
+        null,
+        false,
+        new Error("認証エラー"),
+      ]);
       const { container } = render(<Dashboard />);
       expect(
         container.querySelector(".MuiCircularProgress-root")
@@ -81,11 +84,11 @@ describe("Dashboardページのテスト", () => {
 
   describe("ログイン済みユーザーのデータ表示テスト", () => {
     beforeEach(() => {
-      useAuthStateMock.mockReturnValue([mockUser, false, null]);
+      (useAuthState as jest.Mock).mockReturnValue([mockUser, false, null]);
     });
 
     it("Todoデータが正常に取得された場合、TodoListが表示されること", () => {
-      useSWRMock.mockImplementation(() => ({
+      (useSWR as jest.Mock).mockImplementation(() => ({
         data: mockTodoList,
         error: null,
         isLoading: false,
@@ -103,7 +106,7 @@ describe("Dashboardページのテスト", () => {
     });
 
     it("Firestoreからのデータ読み込み中は、CircularProgressが表示されること", () => {
-      useSWRMock.mockImplementation(() => ({
+      (useSWR as jest.Mock).mockImplementation(() => ({
         data: null,
         error: null,
         isLoading: true,
@@ -116,7 +119,7 @@ describe("Dashboardページのテスト", () => {
     });
 
     it("Firestoreからのデータ取得でエラーが発生した場合、CircularProgressが表示されること", () => {
-      useSWRMock.mockImplementation(() => ({
+      (useSWR as jest.Mock).mockImplementation(() => ({
         data: null,
         error: new Error("データ取得エラー"),
         isLoading: false,

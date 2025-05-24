@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { mutate } from "swr";
 
 type ModalProps = {

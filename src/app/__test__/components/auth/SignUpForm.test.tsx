@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { act } from "react";
 import SignUpForm from "@/app/components/auth/SignUpForm";
+import { useTodo } from "@/app/Hooks/useTodo";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -11,7 +12,8 @@ jest.mock("react-hook-form", () => ({
   useForm: () => ({
     register: jest.fn(),
     handleSubmit:
-      (fn: (data: any) => void) => (e: { preventDefault: () => void }) => {
+      (fn: (data: { email: string; password: string }) => void) =>
+      (e: { preventDefault: () => void }) => {
         e.preventDefault();
         if (Object.keys(mockErrors).length === 0) {
           fn(mockFormData);
@@ -105,8 +107,7 @@ describe("SignUpForm コンポーネントのテスト", () => {
         fireEvent.submit(form);
       });
 
-      const useTodoMock = require("@/app/Hooks/useTodo").useTodo;
-      const handleSignUpMock = useTodoMock().authAction.handleSignUp;
+      const handleSignUpMock = useTodo().authAction.handleSignUp;
       expect(handleSignUpMock).not.toHaveBeenCalled();
       expect(mockErrors.email).toBeDefined();
       expect(mockErrors.email.message).toBe("無効なメールアドレス形式です。");
@@ -125,8 +126,7 @@ describe("SignUpForm コンポーネントのテスト", () => {
         fireEvent.submit(form);
       });
 
-      const useTodoMock = require("@/app/Hooks/useTodo").useTodo;
-      const handleSignUpMock = useTodoMock().authAction.handleSignUp;
+      const handleSignUpMock = useTodo().authAction.handleSignUp;
       expect(handleSignUpMock).not.toHaveBeenCalled();
       expect(mockErrors.password).toBeDefined();
       expect(mockErrors.password.message).toBe(
@@ -169,8 +169,7 @@ describe("SignUpForm コンポーネントのテスト", () => {
   });
 
   it("送信中はローディングインジケーターが表示されること", async () => {
-    const useTodoMock = require("@/app/Hooks/useTodo").useTodo;
-    useTodoMock.mockReturnValue({
+    (useTodo as jest.Mock).mockReturnValue({
       authAction: {
         handleSignUp: jest.fn(),
         isSubmittingLoading: true,

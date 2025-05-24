@@ -11,8 +11,8 @@ const mockUpdateTodo = jest.fn();
 const mockDeleteTodo = jest.fn();
 
 jest.mock("@/app/lib/firebase/firebaseservice", () => ({
-  updateTodo: (...args: any[]) => mockUpdateTodo(...args),
-  deleteTodo: (...args: any[]) => mockDeleteTodo(...args),
+  updateTodo: (...args: unknown[]) => mockUpdateTodo(...args),
+  deleteTodo: (...args: unknown[]) => mockDeleteTodo(...args),
 }));
 
 describe("Taskコンポーネントのテスト", () => {
